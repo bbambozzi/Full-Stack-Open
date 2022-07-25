@@ -1,0 +1,12 @@
+browser->server HTTP POST https://studies.cs.helsinki.fi/exampleapp/new_note_spa
+/*
+note:
+includes a payload of user info
+form.onsubmit is run in the spa.js code, therefore:
+preventdefault is run to avoid the user from reloading the page
+the 'note' variable is created which is a JSON that contains user payload and the current date
+this note variable is pushed unto the 'notes' array
+the function redrawNotes() is called and the frontend is updated
+the note is sent to server
+*/
+server->browser 201 ACCEPTED is sent back to the user.
