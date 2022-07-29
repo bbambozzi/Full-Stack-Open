@@ -1,25 +1,41 @@
-import logo from './logo.svg';
-import './App.css';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+const App = () => {
+    const a = 10;
+    const b = 20;
+    let personA = "Richard";
+    let personB = "Sneed";
+    return (
+        <div>
+            <p>{a} plus {b} is equal to {a + b}</p>
+            <HelloPerson name={personA}/>
+            <ShillGithub />
+        </div>
+    )
+}
+const HelloPerson = (props) => {
+    return (
+        <div>
+            <p>Hello, {props.name}!</p>
+        </div>
+    )
 }
 
-export default App;
+const ShillGithub = () => {
+    return (
+      <div>
+          <p>
+          greeting shit created by <a href="https://www.google.com">chuck</a>
+          </p>
+      </div>
+    )
+};
+
+
+
+
+
+
+
+
+
+export default App
