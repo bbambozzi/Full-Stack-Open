@@ -1,41 +1,59 @@
+function mySum(arr) {
+    let totalSum = 0;
+    for (let val of arr){
+        totalSum += val;
+    }
+    return totalSum;
+}
+
+
+
 
 const App = () => {
-    const a = 10;
-    const b = 20;
-    let personA = "Richard";
-    let personB = "Sneed";
+    const course = 'Half Stack application development'
+    const part1 = 'Fundamentals of React'
+    const exercises1 = 10
+    const part2 = 'Using props to pass data'
+    const exercises2 = 7
+    const part3 = 'State of a component'
+    const exercises3 = 14
+
     return (
-        <div>
-            <p>{a} plus {b} is equal to {a + b}</p>
-            <HelloPerson name={personA}/>
-            <ShillGithub />
-        </div>
+        <>
+        <Header />
+        <Content partName={part1} partAmount={exercises1} />
+            <Content partName={part2} partAmount={exercises2} />
+            <Content partName={part3} partAmount={exercises3} />
+        <Total sum={exercises1+exercises3+exercises2} />
+        </>
     )
 }
-const HelloPerson = (props) => {
+
+
+const Header = () => {
     return (
         <div>
-            <p>Hello, {props.name}!</p>
+            <h3>
+                Half-Stack application development
+            </h3>
         </div>
-    )
+
+    );
 }
 
-const ShillGithub = () => {
+const Content = (props) => {
     return (
-      <div>
-          <p>
-          greeting shit created by <a href="https://www.google.com">chuck</a>
-          </p>
-      </div>
-    )
-};
+        <div>
+            <p>The content of '{props.partName}' has {props.partAmount} exercises</p>
 
+        </div>
+    );
+}
 
-
-
-
-
-
-
+const Total = (props) => {
+    return (
+        <p>The total sum of elements is {props.sum}</p>
+    );
+}
 
 export default App
