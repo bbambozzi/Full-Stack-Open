@@ -1,10 +1,3 @@
-function mySum(arr) {
-    let totalSum = 0;
-    for (let val of arr){
-        totalSum += val;
-    }
-    return totalSum;
-}
 
 
 
@@ -17,43 +10,62 @@ const App = () => {
     const exercises2 = 7
     const part3 = 'State of a component'
     const exercises3 = 14
-
+    const courseArray= [
+        {"partName": part1, qty: exercises1},
+        {"partName": part2, qty: exercises2},
+        {"partName":part3, qty: exercises3}
+        ];
+    console.log("Starting...");
+    console.log(`Element 0 is ${courseArray[0].partName}`)
     return (
         <>
-        <Header />
-        <Content partName={part1} partAmount={exercises1} />
-            <Content partName={part2} partAmount={exercises2} />
-            <Content partName={part3} partAmount={exercises3} />
-        <Total sum={exercises1+exercises3+exercises2} />
-        </>
-    )
-}
-
-
-const Header = () => {
-    return (
-        <div>
-            <h3>
-                Half-Stack application development
-            </h3>
-        </div>
-
+        <Header course={course}/>
+        <Content courseArray={courseArray}/>
+            <Total courseArray={courseArray} />
+                </>
     );
 }
 
 const Content = (props) => {
     return (
         <div>
-            <p>The content of '{props.partName}' has {props.partAmount} exercises</p>
-
+            <Part name={props.courseArray[0].partName} quantity={props.courseArray[0].qty}/>
+            <Part name={props.courseArray[1].partName} quantity={props.courseArray[1].qty}/>
+            <Part name={props.courseArray[2].partName} quantity={props.courseArray[2].qty}/>
         </div>
     );
+
+}
+
+const Part = (props) => {
+    return (
+        <p>Course "${props.name}" has {props.quantity} exercises.</p>
+    )
+}
+
+const Header = (props) => {
+    return (
+        <h2>{props.course}</h2>
+    )
 }
 
 const Total = (props) => {
+    let finalTotal = 0;
+    let local_size = props.courseArray.length;
+    for (let i = 0 ; i < local_size ; i++){
+        finalTotal += props.courseArray[i].qty;
+    }
     return (
-        <p>The total sum of elements is {props.sum}</p>
-    );
+        <p>The total amount of course exercises is equal to : {finalTotal}</p>
+    )
 }
+
+
+
+
+
+
+
+
 
 export default App
