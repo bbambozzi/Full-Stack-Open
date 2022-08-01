@@ -39,7 +39,7 @@ const Content = (props) => {
 
 const Part = (props) => {
     return (
-        <p>Course "${props.name}" has {props.quantity} exercises.</p>
+        <p>Course "{props.name}" has {props.quantity} exercises.</p>
     )
 }
 
