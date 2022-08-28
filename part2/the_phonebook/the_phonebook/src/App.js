@@ -1,13 +1,23 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react';
+import axios from 'axios';
 
 
 const App = () => {
-
-  let [getPhonebook, setNoteBook] = useState([{ id: 1, name: 'sneed', number: 67584930 }])
+  // useState hooks for the states of the App.
+  let [getPhonebook, setNoteBook] = useState([])
   let [getInputValue, setInputValue] = useState('')
   let [getPhoneValue, setPhoneValue] = useState('')
   let [getIfFilter, setIfFilter] = useState(false)
   let [getNameFilter, setNameFilter] = useState('')
+  useEffect(() => {
+    axios.get(`http://localhost:3001/persons`).then(
+      (response) => {
+        console.log('done');
+        return setNoteBook(response.data);
+      }
+    )
+  }, []);
+
 
   const phonebookToShow = !getIfFilter ? getPhonebook :
     (getPhonebook.filter(note => (note.name === getNameFilter)))
