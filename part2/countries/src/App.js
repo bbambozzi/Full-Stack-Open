@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import CountriesDisplay from './components/CountriesDisplay.js';
-import SingleDisplay from './components/SingleDisplay.js'
 
 function App() {
 
@@ -44,16 +43,11 @@ function App() {
 
 
   useEffect(() => {
-    if (getNotes.length === 1) {
-      setCountriesDisplay(<SingleDisplay countryObject={getNotes[0]} />)
-    }
-    else {
-      setCountriesDisplay(
-        <ul>
-          <CountriesDisplay countries={getNotes} />
-        </ul>
-      );
-    }
+    setCountriesDisplay(
+      <ul>
+        <CountriesDisplay countries={getNotes} />
+      </ul>
+    );
   }, [getNotes])
 
 

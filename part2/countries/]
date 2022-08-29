@@ -1,0 +1,14 @@
+import { useState, useEffect } from 'react';
+
+
+const WeatherDisplay = (props) => {
+  const [getCoordinates, setCoordinates] = useState(props.coordinates)
+
+  console.log(`i'm here!`)
+
+}
+
+return
+
+
+export default WeatherDisplay;
