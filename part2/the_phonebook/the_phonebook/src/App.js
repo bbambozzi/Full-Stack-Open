@@ -1,69 +1,126 @@
-import { useState, useEffect } from 'react';
-import axios from 'axios';
+import phonebookService from './services/phonebookService.js';
+import { useState, useEffect } from 'react'
 
 
 const App = () => {
   // useState hooks for the states of the App.
-  let [getPhonebook, setNoteBook] = useState([])
+  let [getPhonebook, setPhoneBook] = useState([])
   let [getInputValue, setInputValue] = useState('')
   let [getPhoneValue, setPhoneValue] = useState('')
-  let [getIfFilter, setIfFilter] = useState(false)
   let [getNameFilter, setNameFilter] = useState('')
+  let [getPhonebookToShow, setPhonebookToShow] = useState([1])
+
+
+
+  // Loads all notes on startup.
   useEffect(() => {
-    axios.get(`http://localhost:3001/persons`).then(
-      (response) => {
-        console.log('done');
-        return setNoteBook(response.data);
-      }
-    )
+    phonebookService.getAll().then(allNotesResponse => {
+      setPhoneBook(allNotesResponse)
+    })
   }, []);
 
 
-  const phonebookToShow = !getIfFilter ? getPhonebook :
-    (getPhonebook.filter(note => (note.name === getNameFilter)))
+  // Filters the notes to show based on the user filter.
+  useEffect(() => {
+    if (!getNameFilter) {
+      setPhonebookToShow(getPhonebook)
+    } else {
+      setPhonebookToShow(getPhonebook.filter((entry) => entry.name.toLowerCase().startsWith(getNameFilter.toLowerCase())))
+    }
+  }, [getPhonebook, getNameFilter])
 
+
+
+  // Simply handles the input change in the name input field.
   let handleNameInputChange = (event) => {
+    event.preventDefault();
     let userInput = event.target.value;
     setInputValue(userInput);
-    console.log(userInput)
   }
 
+
+
+  // Receives a new phonebook entry object, and checks that the name and number are not duplicate in the database.
+  // Then, it adds it into the PhoneBook.
   let handleNewPhonebookEntry = (event) => {
-    event.preventDefault();
+    let entryId;
     let checkIfSeen = getPhonebook.find(note => note.name === getInputValue);
-    let checkIfSeenNumber = getPhonebook.find(note => note.number === parseInt(getPhoneValue))
-
-
+    if (checkIfSeen) { entryId = checkIfSeen.id }
+    let checkIfSeenNumber = getPhonebook.find(note => note.number === (getPhoneValue))
+    if (checkIfSeenNumber) { entryId = checkIfSeenNumber.id }
+    console.log(checkIfSeen)
     if (checkIfSeen || checkIfSeenNumber) {
       let toDisplay;
       if (checkIfSeenNumber) { toDisplay = getPhoneValue };
       if (checkIfSeen) { toDisplay = getInputValue };
-      window.alert(`${toDisplay} is already added to the Phonebook`)
+      let userChoice = window.confirm(`${toDisplay} is already added to the Phonebook. Do you wish to overwrite?`)
+      if (userChoice) {
+        phonebookService.update(entryId, { id: entryId, name: getInputValue, number: getPhoneValue })
+        setInputValue('')
+        setPhoneValue('')
+        return;
+      }
       setInputValue('')
-      return
+      setPhoneValue('')
+      return;
     }
 
-    let newEntry = { id: getPhonebook.length + 1, name: getInputValue, number: parseInt(getPhoneValue) }
-    setNoteBook(getPhonebook.concat(newEntry));
+    let newEntry = { id: getPhonebook.length + 1, name: getInputValue, number: getPhoneValue }
+    phonebookService.add(newEntry)
     setInputValue('')
     setPhoneValue('')
   }
 
+  // Handles input change in the phone entry.
   let handlePhoneNumberChange = (event) => {
+    event.preventDefault();
     let newValue = event.target.value;
     setPhoneValue(newValue)
   }
 
 
+  // This handles the change of input in the name filter.
   let handleFilterNameInputChange = (event) => {
-    let userFilter = event.target.value;
+    event.preventDefault()
+    let userFilter = event.target.value.toLowerCase();
     if (userFilter) {
-      setIfFilter(true)
       setNameFilter(userFilter)
       return
     }
-    setIfFilter(false)
     setNameFilter('')
+
+  }
+
+  // Asks for user confirmation in the case of entry deletion.
+  const askUserToConfirmDeletion = (id, name) => {
+    let userChoice = window.confirm(`Are you sure you want to delete ${name}?`);
+    if (userChoice) {
+      phonebookService.remove(id)
+      phonebookService.getAll().then(allNotesResponse => {
+        setPhoneBook(allNotesResponse)
+      })
+    }
+  }
+
+
+  // Handles renderin of the PhoneBook. Expects to receive the notes that are required to be shown.
+  let PhoneBook = (props) => {
+    let toShow = props.toShow;
+    return (
+      toShow.map(note => {
+        return <li key={parseInt(note.id)}>{note.name} : {note.number} <button onClick={() => { askUserToConfirmDeletion(note.id, note.name) }}>Delete</button></li>
+      })
+    )
+  }
+
+  let ShowFilter = (props) => {
+    let filter = props.filter;
+    let textToShow = `No filter applied.`
+    if (getNameFilter) {
+      textToShow = `Filter : ${filter}`
+    }
+    return <p>{textToShow}</p>;
+
   }
 
   return (
@@ -75,8 +132,8 @@ const App = () => {
         <>
           <h2>Filter</h2>
           <span>Name : </span>
-          <InputHandlerGeneric onChangeDo={handleFilterNameInputChange} value={getNameFilter} />
-          <ShowFilter ifFiltered={getIfFilter} filter={getNameFilter} />
+          <input onChange={handleFilterNameInputChange} value={getNameFilter} />
+          <ShowFilter filter={getNameFilter} />
         </>
         <>
           <h2>New entry</h2>
@@ -85,11 +142,11 @@ const App = () => {
           <form onSubmit={handleNewPhonebookEntry}>
             <>
               <span>Name : </span>
-              <InputHandlerGeneric onChangeDo={handleNameInputChange} value={getInputValue} />
+              <input onChange={handleNameInputChange} value={getInputValue} />
             </>
             <div>
               <span>Number : </span>
-              <InputHandlerGeneric onChangeDo={handlePhoneNumberChange} value={getPhoneValue} />
+              <input onChange={handlePhoneNumberChange} value={getPhoneValue} />
             </div>
             <button type='submit'>Save!</button>
           </form>
@@ -97,40 +154,12 @@ const App = () => {
         <>
           <h2>Entries</h2>
           <ul>
-            <PhoneBook toShow={phonebookToShow} />
+            <PhoneBook toShow={getPhonebookToShow} />
           </ul>
         </>
       </>
     </>
-  )
+  );
 }
-
-let InputHandlerGeneric = (props) => {
-  let onChangeDo = props.onChangeDo;
-  let value = props.value;
-  return <input onChange={onChangeDo} value={value} />
-}
-
-let PhoneBook = (props) => {
-  let toShow = props.toShow;
-  return (
-    toShow.map(note => {
-      return <li key={note.id}>{note.name} : {note.number}</li>
-    })
-  )
-}
-
-let ShowFilter = (props) => {
-  let ifFiltered = props.ifFiltered;
-  let filter = props.filter;
-  let textToShow = `No filter applied.`
-  if (ifFiltered) {
-    textToShow = `Filter : ${filter}`
-  }
-  return <p>{textToShow}</p>;
-}
-
-
-
 
 export default App
