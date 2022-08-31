@@ -8,7 +8,8 @@ const App = () => {
   let [getInputValue, setInputValue] = useState('')
   let [getPhoneValue, setPhoneValue] = useState('')
   let [getNameFilter, setNameFilter] = useState('')
-  let [getPhonebookToShow, setPhonebookToShow] = useState([1])
+  let [getPhonebookToShow, setPhonebookToShow] = useState([])
+
 
 
 
@@ -108,7 +109,7 @@ const App = () => {
     let toShow = props.toShow;
     return (
       toShow.map(note => {
-        return <li key={parseInt(note.id)}>{note.name} : {note.number} <button onClick={() => { askUserToConfirmDeletion(note.id, note.name) }}>Delete</button></li>
+        return <li key={parseInt(note.id)} className="note">{note.name} : {note.number} <button onClick={() => { askUserToConfirmDeletion(note.id, note.name) }}>Delete</button></li>
       })
     )
   }
