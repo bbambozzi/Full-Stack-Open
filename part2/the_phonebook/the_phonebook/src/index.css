@@ -1,0 +1,27 @@
+
+.note {
+    color: darkgreen;
+    font-size: medium;
+}
+
+
+.error{
+    padding: 5px;
+    font-size: large;
+    background-color: lightcoral;
+    color: black;
+    border-radius: 3px;
+    border-style: solid;
+    border-color: black;
+}
+
+.success {
+    padding: 5px;
+    font-size: large;
+    background-color: lightgreen;
+    color: black;
+    border-radius: 3px;
+    border-style: solid;
+    border-color: black;
+}
+
