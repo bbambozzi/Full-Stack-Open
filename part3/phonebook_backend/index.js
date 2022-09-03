@@ -2,17 +2,12 @@ const express = require ('express');
 
 const app = express()
 app.use(express.json())
+const morgan = require('morgan')
+morgan.token('bodyRequest', (req , res) => {return req.method === "POST" ? `${JSON.stringify(req.body)}` : ''} );
+app.use(morgan(':method :url :status :response-time ms - :res[content-length] :bodyRequest :req[content-length]'))
+
 PORT = 3001;
 app.listen(PORT)
-
-// middleware
-const requestLogger = (request, response, next) => {
-    console.log('Method:', request.method)
-    console.log('Path:  ', request.path)
-    console.log('Body:  ', request.body)
-    console.log('---')
-    next()
-  }
 
 
 let notes = [
@@ -81,12 +76,14 @@ app.post('/api/persons/:id' , (request , response) => {
     let receivedObject = (request.body);
     const receivedName = (receivedObject.name)
     const receivedNumber = Number(receivedObject.number)
-    if (!receivedName || receivedNumber) {response.status(400).end()}
+    if (!receivedName || !receivedNumber) {response.status(400).end()}
     const checkDuplicateNumber = notes.find(note => note.number === receivedNumber)
     const checkDuplicateName = notes.find(note => note.name === receivedName)
-    if (checkDuplicateName || checkDuplicateNumber) {response.status(400).json({'error': 'duplicate found'})}
+    if (checkDuplicateName || checkDuplicateNumber) {response.status(400).json({'error': 'duplicate found'}).end()}
+    else {
     receivedObject = {...receivedObject, id: getNewId()}
     notes = notes.concat(receivedObject);
-    response.status(200).end();
+    response.status(200).json(request.body)
+    }
 
 })
