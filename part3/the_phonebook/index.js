@@ -1,21 +1,13 @@
+require('dotenv').config(); // senstitive data is stored in .gitignore'd .env file.
 const express = require('express');
 const cors = require('cors')
 const app = express();
 const morgan = require('morgan')
-const mongoose = require('mongoose')
+const Note = require('./models/note.js')
 
-/*
-const password = process.argv[2]
-const url = `mongodb+srv://morcipan:${password}@cluster0.pqkien0.mongodb.net/phonebook?retryWrites=true&w=majority`
-mongoose.connect(url)
 
-const mongooseSchema = new mongoose.Schema({
-  name: String,
-  number: String
-})
+// unknown endpoint handler
 
-const Note = mongoose.model('Note', mongooseSchema)
-*/
 app.use(express.json());
 app.use(cors());
 app.use(express.static('build'))
@@ -24,84 +16,94 @@ app.use(morgan(':method :url :status :response-time ms - :res[content-length] :b
 
 
 
-let notes = [
-  {
-    "id": 1,
-    "name": "Arto Hellas",
-    "number": "040-123456"
-  },
-  {
-    "id": 2,
-    "name": "Ada Lovelace",
-    "number": "39-44-5323523"
-  },
-  {
-    "id": 3,
-    "name": "Dan Abramov",
-    "number": "12-43-234345"
-  },
-  {
-    "id": 4,
-    "name": "Mary Poppendieck",
-    "number": "39-23-6423122"
-  }
-]
-
-
-const getNewId = () => {
-  const length = notes.length;
-  return length + 1;
-}
-
-const randomBigInt = () => {
-  return Math.floor(Math.random() * (100000))
-}
-
 app.get('/api/persons', (request, response) => {
-  response.json(notes)
+  (Note.find({}).then((notes) => {
+    response.json(notes).end();
+  })).then(() => {
+  })
 })
 
 app.get('/api/info', (request, response) => {
-  const length = notes.length;
+  const length = 'Many!'
   response.send(`<div>Phonebook has info for ${length} people.</div><div>Current time is ${new Date()}</div>`)
 })
 
-app.get('/api/persons/:id', (request, response) => {
-  const id = Number(request.params.id);
-  const found = notes.find(note => note.id === id)
-  if (found === undefined) {
-    response.status(404).end();
-  }
-  response.status(200).json(found);
+app.get('/api/persons/:id', (request, response, next) => {
+  const id = request.params.id;
+  Note.findById(id).then((person) => {
+    if (person) {
+      response.json(person).end();
+    } else {
+      response.status(404).end();
+    }
+  }).catch((error) => {
+    next(error);
+  })
 })
 
-app.delete('/api/persons/:id', (request, response) => {
-  const id = Number(request.params.id);
-  const found = notes.find(note => note.id === id)
-  if (found === undefined) {
+app.put('/api/persons/:id', (request, response, next) => {
+  const id = request.params.id;
+  const newNumber = request.body.number;
+  if (!newNumber) { response.status(400).json({ error: 'no number provided' }).end() }
+  Note.findByIdAndUpdate(id, { number: newNumber }).then((newObject) => {
+    newObject.number = request.body.number;
+    response.status(200).json(newObject)
+  }).catch((error) => {
+    next(error);
+  })
+})
+
+
+
+app.delete('/api/persons/:id', (request, response, next) => {
+  const id = request.params.id;
+  Note.findByIdAndDelete(id).then((result) => {
     response.status(204).end();
-  }
-  const newNotes = notes.filter(note => note.id !== id);
-  notes = newNotes;
-  response.status(204).end();
+  }).catch((error) => {
+    return next(error);
+  })
+
 })
 
 app.post('/api/persons/:id', (request, response) => {
-  let receivedObject = (request.body);
-  const receivedName = (receivedObject.name)
-  const receivedNumber = (receivedObject.number)
-  const errorMessage = { "name received": receivedName, "number received": receivedNumber }
-  if (!receivedName || !receivedNumber) { response.status(400).json(errorMessage).end() }
-  const checkDuplicateNumber = notes.find(note => note.number === receivedNumber)
-  const checkDuplicateName = notes.find(note => note.name === receivedName)
-  if (checkDuplicateName || checkDuplicateNumber) { response.status(400).json({ 'error': 'duplicate found' }).end() }
-  else {
-    receivedObject = { ...receivedObject, id: getNewId() }
-    notes = notes.concat(receivedObject);
-    response.status(200).json(request.body)
+  const receivedObject = request.body;
+  if (!receivedObject.name || !receivedObject.number) {
+    response.status(400).json({ error: `Incomplete POST request` }).end()
   }
-
+  const note = new Note({
+    number: receivedObject.number,
+    name: receivedObject.name
+  })
+  note.save().then(result => {
+    console.log(`Note saved! Result ${result}`)
+    response.status(200).json(result);
+  }).catch((error) => {
+    next(error);
+  })
 })
+
+
+
+
+const errorHandler = (error, _, response, next) => {
+  console.log(error.message)
+  if (error.name === 'CastError') { // MongoDB ID error, let us return an API response.
+    return response.status(400).send({ error: `malformatted ID` })
+  }
+  next(error) // if the error is not CastError, let Express handle it.
+}
+
+const unknownEndpoint = (_, response) => {
+  response.status(400).json({ error: 'unknown endpoint' }).end();
+}
+app.use(unknownEndpoint)
+
+
+
+// logging middleware
+app.use(errorHandler)
+
+
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
   console.log(`server running on ${PORT}`)
