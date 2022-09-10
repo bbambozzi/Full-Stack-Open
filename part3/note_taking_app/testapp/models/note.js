@@ -11,8 +11,16 @@ mongoose.connect(url).then(() => {
 
 const noteSchema = new mongoose.Schema(
   {
-    content: String,
-    name: String,
+    content: {
+      type: String,
+      minLength: 3,
+      required: true
+
+    },
+    date: {
+      type: Date,
+      required: true,
+    },
     important: Boolean
   })
 

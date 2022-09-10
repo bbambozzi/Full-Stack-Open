@@ -1,6 +1,6 @@
-# fly.toml file generated for spring-smoke-5262 on 2022-09-04T15:27:45-03:00
+# fly.toml file generated for dark-bird-8213 on 2022-09-09T18:47:27-03:00
 
-app = "spring-smoke-5262"
+app = "dark-bird-8213"
 kill_signal = "SIGINT"
 kill_timeout = 5
 processes = []

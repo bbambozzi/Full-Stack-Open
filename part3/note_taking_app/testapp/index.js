@@ -42,25 +42,40 @@ app.get('/api/notes/:id', (request, response) => {
 )
 
 
+app.put('/api/notes/:id', (request, response, next) => {
+  const queryID = request.body.id.toString();
+  if (!queryID || queryID === undefined) { response.status(400).json({ error: 'note not found' }) }
+  Note.findByIdAndUpdate(request.body.id, { important: request.body.important }, { new: true, runValidators: true, context: 'query' }).then((query) => {
+    response.json(query).end();
+  }).catch(error => {
+    next(error);
+  })
+})
 
-app.post('/api/notes/:id', (request, response) => {
+
+app.post('/api/notes', (request, response, next) => {
   const body = request.body;
 
-  if (!body || !body.content) {
-    response.status(400).json({
-      "error": "CONTENT MISSING."
-    }).end();
-  }
-  else {
-    const note = new Note({
-      "content": body.content,
-      "important": body.important || false,
-      "date": new Date(),
-    })
-    note.save().then((savedNote) => {
-      response.json(savedNote)
-    })
-  }
+  const note = new Note({
+    content: body.content,
+    important: body.important || false,
+    date: new Date()
+  })
+
+  note.save().then((savedNote) => {
+    response.json(savedNote).end()
+  }).catch((error) => {
+    next(error);
+  })
+})
+
+
+app.delete('/api/notes/:id', (request, response, next) => {
+  Note.findByIdAndDelete(request.params.id).then(() => {
+    response.status(204).json({ 'success': 'note deleted' })
+  }).catch((error) => {
+    next(error);
+  })
 })
 
 const unknownEndpoint = (request, response) => {
@@ -68,19 +83,14 @@ const unknownEndpoint = (request, response) => {
 }
 
 
-
-app.delete('/api/notes/:id', (request, response) => {
-  const id = Number(request.params.id);
-  notes = notes.filter(note => note.id !== id);
-  response.status(204).end();
-})
-
 const errorHandler = (error, request, response, next) => {
   if (error === 'CastError') {
     response.status(400).send({ error: 'malformatted ID`' })
   }
+  else if (error.name === 'ValidationError') {
+    return response.status(400).json({ error: error.message })
+  }
 }
-
 
 app.use(unknownEndpoint)
 app.use(errorHandler)

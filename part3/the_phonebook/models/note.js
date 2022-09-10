@@ -10,9 +10,22 @@ mongoose.connect(url).then(() => {
   console.log(`Error : ${e}`)
 })
 
+
+// Schema configuration and field validation
 const noteSchema = mongoose.Schema({
-  name: String,
-  number: String,
+  name: {
+    type: String,
+    minLength: 3,
+    required: true
+  },
+  number: {
+    type: String,
+    minLength: 4,
+    required: true,
+    validate: {
+      validator: function(v) { return /\d{2,3}\-\d{7,8}/.test(v) } // regex validating phone numbers
+    }
+  }
 })
 
 

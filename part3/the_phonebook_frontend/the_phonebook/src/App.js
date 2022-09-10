@@ -43,16 +43,16 @@ const App = () => {
     setSuccessMessage(`${message}`);
     setTimeout(() => {
       setSuccessMessage(null)
-    } , 5000)
+    }, 5000)
   }
- const displayNewNoteError= (message) => {
+  const displayNewNoteError = (message) => {
     setErrorMessage(`${message}`);
     setTimeout(() => {
       setErrorMessage(null)
-    } , 5000)
+    }, 5000)
   }
 
-  
+
   // Receives a new phonebook entry object, and checks that the name and number are not duplicate in the database.
   // Then, it adds it into the PhoneBook.
   // Also handles duplicates in case it finds any, and asks for user confirmation.
@@ -70,29 +70,31 @@ const App = () => {
       let userChoice = window.confirm(`${toDisplay} is already added to the Phonebook. Do you wish to overwrite?`)
       if (userChoice) {
         phonebookService.update(entryId, { id: entryId, name: getInputValue, number: getPhoneValue }).
-        then(() => {
-          phonebookService.getAll()
-          .then((allNotesResponse) => {
-            setPhoneBook((allNotesResponse))
-          }).then(() => {
-            displayNewNoteSuccess(`${getInputValue} was added successfully!`);
+          then(() => {
+            phonebookService.getAll()
+              .then((allNotesResponse) => {
+                setPhoneBook((allNotesResponse))
+              }).then(() => {
+                displayNewNoteSuccess(`${getInputValue} was added successfully!`);
+              })
+          }).catch((error) => {
+            displayNewNoteError(`Error creating note : ${error.response.data.error}`);
           })
-        }).catch((e) => {{
-          displayNewNoteError(`This note has already been deleted. Error : ${e}`)
-        }})
       }
       setInputValue('')
       setPhoneValue('')
       return;
     }
 
-    let newEntry = {name: getInputValue, number: getPhoneValue };
+    let newEntry = { name: getInputValue, number: getPhoneValue };
     phonebookService.add(newEntry).then(() => {
       phonebookService.getAll().then((getAllNotes) => {
         setPhoneBook(getAllNotes)
       }).then(() => {
         displayNewNoteSuccess(`${getInputValue} was added succesfully!`)
       })
+    }).catch((error) => {
+      displayNewNoteError(`Error creating note : ${error.response.data.error}`)
     })
   }
 
@@ -121,9 +123,9 @@ const App = () => {
     let userChoice = window.confirm(`Are you sure you want to delete ${name}?`);
     if (userChoice) {
       phonebookService.remove(id).then(() => {
-      phonebookService.getAll().then(allNotesResponse => {
-        setPhoneBook(allNotesResponse)
-      })
+        phonebookService.getAll().then(allNotesResponse => {
+          setPhoneBook(allNotesResponse)
+        })
       })
     }
   }
@@ -155,8 +157,8 @@ const App = () => {
         <>
           <h1>Phonebook</h1>
           <>
-          <ErrorMessage message={getErrorMessage}/>
-          <SuccessMessage message={getSuccessMessage}/>
+            <ErrorMessage message={getErrorMessage} />
+            <SuccessMessage message={getSuccessMessage} />
           </>
         </>
         <>
@@ -192,13 +194,13 @@ const App = () => {
   );
 }
 
-const ErrorMessage = ({message}) => {
-  if (message === null) {return null}
+const ErrorMessage = ({ message }) => {
+  if (message === null) { return null }
   return <p className="error">Error! : {message}</p>
 }
 
-const SuccessMessage = ({message}) => {
-  if (message === null) {return null}
+const SuccessMessage = ({ message }) => {
+  if (message === null) { return null }
   return <p className="success">Success! : {message}</p>
 }
 
