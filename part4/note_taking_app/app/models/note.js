@@ -15,7 +15,7 @@ const noteSchema = new mongoose.Schema(
     important: Boolean
   })
 
-
+// returns the note without the __v and _id and makes the ID a string instead of an object.
 noteSchema.set('toJSON', {
   transform: ((_, receivedObj) => {
     receivedObj.id = receivedObj._id.toString();

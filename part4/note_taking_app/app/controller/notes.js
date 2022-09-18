@@ -5,18 +5,16 @@ notesRouter.get('/info', (request, response) => {
   response.send('<h1>Hello, world!</h1>')
 })
 
-notesRouter.get('/', (_, response) => {
-  Note.find(({})).then((allNotes) => {
-    response.json(allNotes)
-  })
+notesRouter.get('/', async (_, response) => {
+  const allNotes = await Note.find(({}))
+  response.json(allNotes)
 })
 
-notesRouter.get('/:id', (request, response) => {
+notesRouter.get('/:id', async (request, response) => {
   let id = (request.params.id);
   if (id) {
-    Note.findById(request.params.id).then((note) => {
-      response.json(note)
-    })
+    const note = Note.findById(request.params.id)
+    response.json(note)
   }
   else {
     response.status(400).json({

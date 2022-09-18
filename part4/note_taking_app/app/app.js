@@ -8,11 +8,6 @@ const middleware = require('./utils/middleware')
 const mongoose = require('mongoose')
 const logger = require('./utils/logger')
 
-
-logger.info(`Starting MongoDB application in PORT ${config.env.PORT}`)
-logger.info(`Connecting to MongoDB URI : ${config.MONGODB_URI}`)
-
-
 // handles mongoose promise-based connection
 mongoose.connect(config.MONGODB_URI).then(() => {
   logger.info('Connected succesfully to the MongoDB URI!')

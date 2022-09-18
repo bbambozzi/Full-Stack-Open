@@ -1,5 +1,5 @@
-const reverse = require('../for_testing').reverse
-const average = require('../for_testing').average
+const reverse = require('../utils/for_testing').reverse
+const average = require('../utils/for_testing').average
 
 test('reverse of a', () => {
   const result = reverse('a')
