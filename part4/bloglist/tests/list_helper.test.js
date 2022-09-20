@@ -9,8 +9,9 @@ const app = require('../app')
 const supertest = require('supertest')
 const api = supertest(app)
 const mongoose = require('mongoose')
-// cleans the test DB and re-inserts the helper notes.
 
+
+// cleans the test DB and re-inserts the helper notes.
 beforeEach(async () => {
   await Blog.deleteMany({})
   for (let blog of helper.manyBlogs) {
@@ -23,7 +24,6 @@ afterAll(() => {
   mongoose.connection.close();
 })
 
-// TODO handle async nature of the call, grab the response, and evaluate based on th response.
 test('returns 1', () => {
   expect(dummy([])).toBe(1)
 })
@@ -60,5 +60,36 @@ describe('Most liked blog', () => {
   test('All the blogs', async () => {
     const response = await api.get('/api/blogs')
     expect(mostLikes(response.body)).toEqual({ author: "Edsger W. Dijkstra", likes: 17 })
+  })
+
+})
+describe('Mongoose API', () => {
+  test('Correctly returns id', async () => {
+    const response = await api.get('/api/blogs')
+    for (let blog of response.body) {
+      expect(blog.id).toBeDefined()
+      expect(blog._id).toBeUndefined()
+    }
+  })
+  test('Adds and removes a new note', async () => {
+    const aBlog = {
+      author: "testman2000",
+      title: "the joy of testing",
+      url: "testing.com",
+    };
+    const sentBlog = await api.post('/api/blogs').send(aBlog)
+    expect(sentBlog.body.likes).toBe(0)
+    const response = await api.get('/api/blogs')
+    expect(response.body.length).toBe(7)
+    const deleteAnswer = await api.delete(`/api/blogs/${sentBlog.body.id}`)
+    expect(deleteAnswer.statusCode).toBe(204)
+  })
+  test('Incomplete note gets caught', async () => {
+    const newBlog = {
+      title: "The nature of Miami!",
+      author: "Ricardo Fort",
+    }
+    const response = await api.post('/api/blogs').send(newBlog)
+    expect(response.status).toBe(400);
   })
 })

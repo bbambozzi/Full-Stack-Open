@@ -24,12 +24,11 @@ blogsRouter.get('/:id', (request, response, next) => {
 
 blogsRouter.post('/', (request, response, next) => {
   const body = request.body;
-  console.log(`body of post is ${body}`)
   const newBlog = new Blog({
     title: body.title,
     author: body.author,
     url: body.url,
-    likes: body.likes
+    likes: body.likes || 0,
   })
   newBlog.save().then((answer) => {
     response.status(201).json(answer).end();
