@@ -61,9 +61,8 @@ describe('Most liked blog', () => {
     const response = await api.get('/api/blogs')
     expect(mostLikes(response.body)).toEqual({ author: "Edsger W. Dijkstra", likes: 17 })
   })
-
 })
-describe('Mongoose API', () => {
+describe('API', () => {
   test('Correctly returns id', async () => {
     const response = await api.get('/api/blogs')
     for (let blog of response.body) {
@@ -91,5 +90,25 @@ describe('Mongoose API', () => {
     }
     const response = await api.post('/api/blogs').send(newBlog)
     expect(response.status).toBe(400);
+  })
+  test('Note is deleted correctly', async () => {
+    // query the DB via API
+    const response = await api.get('/api/blogs')
+    // grab a valid ID from the DB
+    const validID = response.body[0].id
+    // API delete request
+    const deleteResponse = await api.delete(`/api/blogs/${validID}`)
+    expect(deleteResponse.status).toBe(204);
+  })
+  test('Note is updated correctly.', async () => {
+    const response = await api.get('/api/blogs')
+    let aNote = response.body[0]
+    aNote = { ...aNote, likes: aNote.likes + 1 }
+    const id = aNote.id;
+    const answer = await api.put(`/api/blogs/${id}`).send(aNote)
+    expect(answer.status).toBe(204)
+    // query the DB again to make sure it was saved correctly.
+    const savedNote = await api.get(`/api/blogs/${id}`)
+    expect(aNote).toEqual(savedNote.body)
   })
 })

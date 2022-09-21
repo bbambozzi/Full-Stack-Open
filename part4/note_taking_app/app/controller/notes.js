@@ -11,15 +11,14 @@ notesRouter.get('/', async (_, response) => {
 })
 
 notesRouter.get('/:id', async (request, response) => {
-  let id = (request.params.id);
-  if (id) {
-    const note = Note.findById(request.params.id)
-    response.json(note)
+  const id = request.params.id
+  if (!id || !id.match(/^[0-9a-fA-F]{24}$/)) { response.status(400).end(); }
+  const note = await Note.findById(request.params.id).catch(response.status(404)).catch((_) => { response.status(404).end(); })
+  if (note) {
+    response.status(200).json(note)
   }
   else {
-    response.status(400).json({
-      "Error": "Not found"
-    })
+    response.status(404).end();
   }
 }
 )
@@ -38,7 +37,6 @@ notesRouter.put('/:id', (request, response, next) => {
 
 notesRouter.post('/', (request, response, next) => {
   const body = request.body;
-
   const note = new Note({
     content: body.content,
     important: body.important || false,
@@ -46,8 +44,9 @@ notesRouter.post('/', (request, response, next) => {
   })
 
   note.save().then((savedNote) => {
-    response.json(savedNote).end()
+    response.status(201).json(savedNote).end()
   }).catch((error) => {
+    response.status(400).end();
     next(error);
   })
 })
