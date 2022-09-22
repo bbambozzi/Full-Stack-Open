@@ -14,11 +14,12 @@ const unknownEndpoint = (request, response, next) => {
 
 // handle MongoDB mongoose specific errors.
 const errorHandler = (error) => {
-  logger.error(`${error.message}`)
+  logger.error(`ERROR HANDLER : ${error.message}`)
   if (error.name === 'CastError') {
     response.status(400).json({ error: 'wrongly formatted ID' })
   }
   if (error.name === 'ValidationError') {
+    logger.error(`ERROR HANDLER : ${error}`)
     response.status(400).json({ error: `${error.message}` })
   }
   next(error);

@@ -12,16 +12,22 @@ const noteSchema = new mongoose.Schema(
       type: Date,
       required: true,
     },
-    important: Boolean
+    important: Boolean,
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
+    }
+
   })
 
-// returns the note without the __v and _id and makes the ID a string instead of an object.
+
 noteSchema.set('toJSON', {
-  transform: ((_, receivedObj) => {
+  transform: ((document, receivedObj) => {
     receivedObj.id = receivedObj._id.toString();
     delete receivedObj.__v;
     delete receivedObj._id;
   })
 });
 
-module.exports = mongoose.model('Note', noteSchema)
+const Note = mongoose.model('Note', noteSchema)
+module.exports = Note;

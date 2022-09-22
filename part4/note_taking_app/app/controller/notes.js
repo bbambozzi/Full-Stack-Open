@@ -1,5 +1,6 @@
 const notesRouter = require('express').Router(); // this is the router
 const Note = require('../models/note')
+const User = require('../models/user')
 
 notesRouter.get('/info', (request, response) => {
   response.send('<h1>Hello, world!</h1>')
@@ -20,8 +21,7 @@ notesRouter.get('/:id', async (request, response) => {
   else {
     response.status(404).end();
   }
-}
-)
+})
 
 
 notesRouter.put('/:id', (request, response, next) => {
@@ -34,21 +34,21 @@ notesRouter.put('/:id', (request, response, next) => {
   })
 })
 
-
-notesRouter.post('/', (request, response, next) => {
+notesRouter.post('/', async (request, response, next) => {
   const body = request.body;
+  if (!body.userId) { response.status(400).end(); }
+  const user = await User.findById(body.userId)
+  if (user === undefined || !user) { response.status(400).json({ response: "userid not found" }).end(); next(); return; }
   const note = new Note({
     content: body.content,
     important: body.important || false,
-    date: new Date()
+    date: new Date(),
+    user: user._id
   })
-
-  note.save().then((savedNote) => {
-    response.status(201).json(savedNote).end()
-  }).catch((error) => {
-    response.status(400).end();
-    next(error);
-  })
+  const savedNote = await note.save();
+  user.notes.push(savedNote._id)
+  await user.save();
+  response.status(201).json(savedNote);
 })
 
 
@@ -59,6 +59,5 @@ notesRouter.delete('/:id', (request, response, next) => {
     next(error);
   })
 })
-
 module.exports = notesRouter
 

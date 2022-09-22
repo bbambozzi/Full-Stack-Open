@@ -1,6 +1,7 @@
 // helps for notes
 const Note = require('../models/note')
 const mongoose = require('mongoose')
+const User = require('../models/user')
 
 
 const newNotes = [
@@ -18,7 +19,11 @@ const nonExistingId = async () => {
 
 const notesInDb = async () => {
   const notes = await Note.find({})
-  return notes.map((note) => note.toJSON())
+  return notes.map(note => note.toJSON())
+}
+const usersInDb = async () => {
+  const users = await User.find({})
+  return users.map(user => user.toJSON())
 }
 
-module.exports = { newNotes, nonExistingId, notesInDb }
+module.exports = { newNotes, nonExistingId, notesInDb, usersInDb }
