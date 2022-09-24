@@ -2,7 +2,7 @@ const dummy = () => 1;
 
 const totalLikes = (blogsArray) => {
   if (blogsArray.length === 0) { return 0 }
-  const answer = blogsArray.reduce((accumulatedLikes, currentObject) => { return accumulatedLikes += currentObject.likes }, 0);
+  const answer = blogsArray.reduce((accumulatedLikes, currentObject) => { return accumulatedLikes += currentObject.likes || 0 }, 0);
   return answer;
 };
 

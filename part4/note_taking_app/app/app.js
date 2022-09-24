@@ -5,6 +5,7 @@ const app = express()
 const cors = require('cors')
 const notesRouter = require('./controller/notes')
 const usersRouter = require('./controller/users')
+const loginRouter = require('./controller/login')
 const middleware = require('./utils/middleware')
 const mongoose = require('mongoose')
 const logger = require('./utils/logger')
@@ -15,15 +16,13 @@ mongoose.connect(config.MONGODB_URI).then(() => {
 }).catch((error) => {
   logger.error(`ERROR, could not connect. Error : ${error}`)
 })
-
-
-
 app.use(cors())
 app.use(express.json())
 app.use(express.static('build'))
 app.use(middleware.requestLogger) // logs all requests
 app.use('/api/users', usersRouter)
 app.use('/api/notes', notesRouter) // sets relative path and connects to the router
+app.use('/api/login', loginRouter)
 app.use(middleware.unknownEndpoint) // handles unkown endpoint is no path is found
 app.use(middleware.errorHandler) // handles errors, specifically MongoDB CastError or ValidationError.
 

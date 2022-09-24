@@ -5,32 +5,51 @@ const mostBlogs = require('../utils/list_helper').mostBlogs
 const mostLikes = require('../utils/list_helper').mostLikes
 const helper = require('./helper')
 const Blog = require('../models/blogs')
+const User = require('../models/users')
 const app = require('../app')
 const supertest = require('supertest')
 const api = supertest(app)
 const mongoose = require('mongoose')
+const bcrypt = require('bcrypt')
+let token = null;
+let dummyUserId = null;
 
-
-// cleans the test DB and re-inserts the helper notes.
-beforeEach(async () => {
-  await Blog.deleteMany({})
-  for (let blog of helper.manyBlogs) {
-    let newBlog = new Blog(blog)
-    await newBlog.save();
-  }
-}, 5000000) // wait a bit more to make sure that all elements are loaded up.
-
+// cleans the test DB and re-inserts the helper blogs
 afterAll(() => {
   mongoose.connection.close();
 })
 
-test('returns 1', () => {
-  expect(dummy([])).toBe(1)
-})
+beforeAll(async () => {
+  await User.deleteMany({});
+  const hashedPassword = await bcrypt.hash('12345', 10)
+  const newUser = new User({
+    name: 'josh',
+    username: 'josh12345',
+    hashedPassword
+  }) // creates a new user
+  await newUser.save();
+  const response = await api.post('/api/login').send({
+    password: '12345',
+    username: 'josh12345'
+  });
+  expect(response.body.username).toBe('josh12345') // saves it and logs in correctly
+  token = response.body.token;
+  dummyUserId = newUser._id;
+}, 50000)
 
-describe('Total likes', () => {
+describe('Blogs', () => {
+  beforeEach(async () => {
+    await Blog.deleteMany({})
+    for (let blog of helper.manyBlogs) {
+      blog.user = dummyUserId;
+      let newBlog = new Blog(blog)
+      await newBlog.save();
+    }
+  }, 5000000) // wait a bit more to make sure that all elements are loaded up.
+
   test('One blog', async () => {
     const response = await api.get('/api/blogs')
+    console.log(`response: status ; ${response.statusCode}`)
     expect(totalLikes([response.body[0]])).toBe(7)
   })
   test('Many blogs', async () => {
@@ -40,29 +59,18 @@ describe('Total likes', () => {
   test('Empty array', () => {
     expect(totalLikes([])).toBe(0)
   })
-})
-
-describe('Favorite blog', () => {
-  test('Many blogs', async () => {
+  test('Most popular blog', async () => {
     const response = await api.get('/api/blogs')
     expect(favoriteBlog(response.body)).toEqual({ title: "Canonical string reduction", author: "Edsger W. Dijkstra", likes: 12 });
   })
-})
-
-describe('Most Blogs', () => {
-  test('All the blogs', async () => {
+  test('Most blogs written', async () => {
     const response = await api.get('/api/blogs')
     expect(mostBlogs(response.body)).toEqual({ author: "Robert C. Martin", blogs: 3 })
   })
-})
-
-describe('Most liked blog', () => {
-  test('All the blogs', async () => {
+  test('Most liked of all blogs', async () => {
     const response = await api.get('/api/blogs')
     expect(mostLikes(response.body)).toEqual({ author: "Edsger W. Dijkstra", likes: 17 })
   })
-})
-describe('API', () => {
   test('Correctly returns id', async () => {
     const response = await api.get('/api/blogs')
     for (let blog of response.body) {
@@ -70,37 +78,38 @@ describe('API', () => {
       expect(blog._id).toBeUndefined()
     }
   })
-  test('Adds and removes a new note', async () => {
+  test('Adds and removes a new blog', async () => {
     const aBlog = {
       author: "testman2000",
       title: "the joy of testing",
       url: "testing.com",
+      likes: 99,
     };
-    const sentBlog = await api.post('/api/blogs').send(aBlog)
-    expect(sentBlog.body.likes).toBe(0)
+    const sentBlog = await api.post('/api/blogs').send(aBlog).set('Authorization', `Bearer ${token}`)
+    console.log(sentBlog.body)
+    expect(sentBlog.status).toBe(201)
     const response = await api.get('/api/blogs')
     expect(response.body.length).toBe(7)
-    const deleteAnswer = await api.delete(`/api/blogs/${sentBlog.body.id}`)
+    const deleteAnswer = await api.delete(`/api/blogs/${sentBlog.body.id}`).set('Authorization', `Bearer ${token}`)
     expect(deleteAnswer.statusCode).toBe(204)
   })
-  test('Incomplete note gets caught', async () => {
+  test('Incomplete blog gets caught', async () => {
     const newBlog = {
       title: "The nature of Miami!",
       author: "Ricardo Fort",
     }
-    const response = await api.post('/api/blogs').send(newBlog)
+    const response = await api.post('/api/blogs').send(newBlog).set('Authorization', `Bearer ${token}`)
     expect(response.status).toBe(400);
   })
-  test('Note is deleted correctly', async () => {
-    // query the DB via API
+  test('Blog is deleted correctly', async () => {
     const response = await api.get('/api/blogs')
-    // grab a valid ID from the DB
     const validID = response.body[0].id
-    // API delete request
-    const deleteResponse = await api.delete(`/api/blogs/${validID}`)
+    const deleteResponse = await api.delete(`/api/blogs/${validID}`).set('Authorization', `Bearer ${token}`)
+    console.log(`Valid ID is ${validID}`)
+
     expect(deleteResponse.status).toBe(204);
   })
-  test('Note is updated correctly.', async () => {
+  test('blog is updated correctly.', async () => {
     const response = await api.get('/api/blogs')
     let aNote = response.body[0]
     aNote = { ...aNote, likes: aNote.likes + 1 }
@@ -112,3 +121,39 @@ describe('API', () => {
     expect(aNote).toEqual(savedNote.body)
   })
 })
+
+describe('Users', () => {
+  beforeAll(async () => {
+    await User.deleteMany({})
+    const singleUser = new User({
+      name: 'josh',
+      hashedPassword: 'longencryptedpasswordhere',
+      username: '12345enthusiast'
+    })
+    await singleUser.save();
+  })
+  test('short username/password is rejected', async () => {
+    const aUser = {
+      username: 'ab',
+      password: 'a',
+      name: 'typo'
+    }
+    const serverResponse = await api.post('/api/users').send(aUser)
+    expect(serverResponse.statusCode).toBe(401);
+    expect(serverResponse.body).toEqual({ error: 'username or password too short' });
+  })
+  test('duplicate username rejected', async () => {
+    const newUser = {
+      name: 'richard',
+      password: 'passwordgoeshere',
+      username: '12345enthusiast'
+    }
+    const serverResponse = await api.post('/api/users').send(newUser)
+    expect(serverResponse.statusCode).toBe(401);
+    expect(serverResponse.body).toEqual({ error: 'duplicate username found' })
+
+  })
+})
+
+
+

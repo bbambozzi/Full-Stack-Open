@@ -12,16 +12,23 @@ const unknownEndpoint = (request, response, next) => {
 }
 
 
-// handle MongoDB mongoose specific errors.
+// handles NPM package-specific errors.
 const errorHandler = (error) => {
   logger.error(`ERROR HANDLER : ${error.message}`)
   if (error.name === 'CastError') {
-    response.status(400).json({ error: 'wrongly formatted ID' })
+    return response.status(400).json({ error: 'wrongly formatted ID' })
   }
   if (error.name === 'ValidationError') {
-    logger.error(`ERROR HANDLER : ${error}`)
-    response.status(400).json({ error: `${error.message}` })
+    return response.status(400).json({ error: `${error.message}` })
   }
+  if (error.name === 'JsonWebTokenError') {
+    return response.status(401).json({ error: 'invalid token' })
+  }
+  if (error.name === 'TokenExpiredError') {
+    return response.status(401).json({ error: 'token expired' })
+  }
+  logger.error(`ERROR HANDLER : ${error.message}`)
+
   next(error);
 }
 
