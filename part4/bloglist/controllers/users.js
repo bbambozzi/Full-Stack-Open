@@ -24,6 +24,4 @@ usersRouter.post('/', async (request, response) => {
   await newUser.save();
   response.status(201).end();
 })
-
 module.exports = usersRouter
-

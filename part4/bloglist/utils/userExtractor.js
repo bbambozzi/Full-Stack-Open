@@ -3,8 +3,6 @@ const jwt = require('jsonwebtoken')
 
 const userExtractor = (request, _, next) => {
   if (request.headers.authorization) {
-    console.log('AUTH RECEIVED!')
-    console.log(`AUTH HEADER ${request.headers.authorization}`)
     const authorizationHeader = request.headers.authorization;
     const token = authorizationHeader.split(' ')[1];
     if (token) {
