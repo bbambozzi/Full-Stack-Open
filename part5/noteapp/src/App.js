@@ -19,7 +19,7 @@ const App = () => {
   useEffect(() => {
     const loggedUserJSON = (window.localStorage.getItem('loggedNoteappUser'))
     console.log(`logged user is null? ${null === loggedUserJSON}`)
-    if (loggedUserJSON){
+    if (loggedUserJSON) {
       console.log(`logged user : ${loggedUserJSON}`)
       const localUser = JSON.parse(loggedUserJSON);
       setUser(localUser);
@@ -38,7 +38,7 @@ const App = () => {
   const handleLogin = async (event) => {
     event.preventDefault();
     try {
-      const user = await loginService.login({username, password})
+      const user = await loginService.login({ username, password })
       setUser(user)
       setPassword('')
       setUsername('')
@@ -56,35 +56,35 @@ const App = () => {
 
   }
 
-const LoginForm = () => {
-  return (
-  <form onSubmit={handleLogin}>
-    <div>
-      username 
-      <input type="text" value={username} name='Username' onChange={({target}) => {setUsername(target.value)}}>
-      </input>
-    </div>
-    <div>
-      password
-      <input type='text' value={password} name='Password' onChange={({target}) => {setPassword(target.value)}}>
-      </input>
-    </div>
-    <button type="submit">login</button>
-  </form>
-  )
-}
+  const LoginForm = () => {
+    return (
+      <form onSubmit={handleLogin}>
+        <div>
+          username
+          <input type="text" value={username} name='Username' onChange={({ target }) => { setUsername(target.value) }}>
+          </input>
+        </div>
+        <div>
+          password
+          <input type='text' value={password} name='Password' onChange={({ target }) => { setPassword(target.value) }}>
+          </input>
+        </div>
+        <button type="submit">login</button>
+      </form>
+    )
+  }
 
-const NoteForm = () => {
-  return (
-     <form onSubmit={addNote}>
+  const NoteForm = () => {
+    return (
+      <form onSubmit={addNote}>
         <input
           value={newNote}
           onChange={handleNoteChange}
         />
         <button type="submit">save</button>
       </form>
-  )
-}
+    )
+  }
   const addNote = (event) => {
     event.preventDefault()
     const noteObject = {
@@ -151,7 +151,7 @@ const NoteForm = () => {
           />
         )}
       </ul>
-     <Footer />
+      <Footer />
     </div>
   )
 }
