@@ -15,4 +15,32 @@ const newBlog = async ({ title, author, url }) => {
   return response.data;
 };
 
-export default { newBlog };
+const updateBlog = async (newBlog) => {
+  const config = {
+    headers: {
+      Authorization: `bearer ${
+        JSON.parse(window.localStorage.getItem("blogAppUser")).token
+      }`,
+    },
+  };
+  const response = await axios.put(
+    `${axiosURL}/${newBlog.id}`,
+    newBlog,
+    config
+  );
+  return response.data;
+};
+
+const removeBlog = async (newBlog) => {
+  const config = {
+    headers: {
+      Authorization: `bearer ${
+        JSON.parse(window.localStorage.getItem("blogAppUser")).token
+      }`,
+    },
+  };
+  await axios.delete(`${axiosURL}/${newBlog.id}`, config);
+  return true;
+};
+
+export default { newBlog, updateBlog, removeBlog };

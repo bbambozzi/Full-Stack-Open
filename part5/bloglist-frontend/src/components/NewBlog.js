@@ -1,19 +1,12 @@
-import { useState } from "react";
-import newBlogService from "../services/newblog";
+import React, { useState } from "react";
+import PropTypes from "prop-types";
 
 const NewBlog = (props) => {
   const [title, setTitle] = useState("");
   const [url, setUrl] = useState("");
   const [author, setAuthor] = useState("");
-  const notify = props.DisplayTemporaryNotification;
-  const refreshBlogs = props.refreshAllBlogs;
 
-  const handleNewBlog = (event) => {
-    event.preventDefault();
-    newBlogService.newBlog({ title, url, author });
-    refreshBlogs();
-    notify(`Blog titled ${title} created!`);
-  };
+  const handleNewBlog = props.handleNewBlog;
 
   const handleTitleChange = (event) => {
     setTitle(event.target.value);
@@ -30,18 +23,24 @@ const NewBlog = (props) => {
   return (
     <>
       <h2>Submit a new Blog!</h2>
-      <form onSubmit={handleNewBlog}>
+      <form
+        data-testid="entireForm"
+        onSubmit={(event) => handleNewBlog(title, url, author, event)}
+      >
         <>
           <p>Title</p>
-          <input onChange={handleTitleChange}></input>
+          <input onChange={handleTitleChange} data-testid="titleInput"></input>
         </>
         <>
           <p>Author</p>
-          <input onChange={handleAuthorChange}></input>
+          <input
+            onChange={handleAuthorChange}
+            data-testid="authorInput"
+          ></input>
         </>
         <>
           <p>URL</p>
-          <input onChange={handleUrlChange}></input>
+          <input onChange={handleUrlChange} data-testid="urlInput"></input>
         </>
         <>
           <button type="submit">Submit</button>
@@ -49,6 +48,11 @@ const NewBlog = (props) => {
       </form>
     </>
   );
+};
+
+NewBlog.propTypes = {
+  DisplayTemporaryNotification: PropTypes.func,
+  handleNewBlog: PropTypes.func.isRequired,
 };
 
 export default NewBlog;

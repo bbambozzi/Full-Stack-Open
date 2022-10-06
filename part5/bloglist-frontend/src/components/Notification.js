@@ -1,3 +1,5 @@
+import React from "react";
+import PropTypes from "prop-types";
 const Notification = (props) => {
   const message = props.message;
   if (message) {
@@ -8,6 +10,10 @@ const Notification = (props) => {
     );
   }
   return null;
+};
+
+Notification.propTypes = {
+  message: PropTypes.string || PropTypes.bool,
 };
 
 export default Notification;

@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
+import React, { useState } from "react";
 import loginService from "../services/login";
+import PropTypes from "prop-types";
 
-const LoginForm = (props) => {
-  const DisplayTemporaryNotification = props.DisplayTemporaryNotification;
+const LoginForm = ({ DisplayTemporaryNotification }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
@@ -10,7 +10,7 @@ const LoginForm = (props) => {
     event.preventDefault();
     const response = await loginService
       .login({ username, password })
-      .catch((_) => {
+      .catch(() => {
         DisplayTemporaryNotification(`Incorrent username or password`);
       });
     if (response) {
@@ -47,6 +47,10 @@ const LoginForm = (props) => {
       </>
     </>
   );
+};
+
+LoginForm.propTypes = {
+  DisplayTemporaryNotification: PropTypes.func.isRequired,
 };
 
 export default LoginForm;
