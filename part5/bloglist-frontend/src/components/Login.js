@@ -34,9 +34,15 @@ const LoginForm = ({ DisplayTemporaryNotification }) => {
           <>
             <>
               <p>Username</p>
-              <input onChange={handleUsernameChange}></input>
+              <input
+                onChange={handleUsernameChange}
+                data-testid="usernameInput"
+              ></input>
               <p>Password</p>
-              <input onChange={handlePasswordChange}></input>
+              <input
+                onChange={handlePasswordChange}
+                data-testid="passwordInput"
+              ></input>
             </>
             <>
               <button type="submit">Submit!</button>

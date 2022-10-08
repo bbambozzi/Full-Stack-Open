@@ -38,6 +38,7 @@ const Blog = ({ blog, handleLike, allowRemove, refreshAllBlogs }) => {
           likes: {blog.likes}{" "}
           <button
             onClick={() => handleLike({ ...blog, likes: blog.likes + 1 })}
+            data-testid="likeButton"
           >
             Like!
           </button>

@@ -16,7 +16,9 @@ const Toggleable = (props) => {
   return (
     <>
       <div style={hideWhenVisible}>
-        <button onClick={toggleVisibility}>{props.buttonLabel}</button>
+        <button onClick={toggleVisibility} data-testid="showContentButton">
+          {props.buttonLabel}
+        </button>
       </div>
       <div style={showWhenVisible} data-testid="divThatHides">
         {props.children}

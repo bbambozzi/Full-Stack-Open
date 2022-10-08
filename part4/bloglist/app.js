@@ -9,6 +9,7 @@ const blogsRouter = require('./controllers/blog')
 const usersRouter = require('./controllers/users')
 const loginRouter = require('./controllers/login')
 const userExtractor = require('./utils/userExtractor')
+const testsRouter = require('./controllers/tests.js')
 
 logger.info(`Connecting to MongoDB..`)
 mongoose.connect(config.MONGODB_URI).then(() => {
@@ -24,6 +25,9 @@ app.use(middleware.requestLogger)
 app.use('/api/blogs', userExtractor, blogsRouter)
 app.use('/api/users', usersRouter)
 app.use('/api/login', loginRouter)
+if (process.env.NODE_ENV === 'test') {
+  app.use('/api/tests', testsRouter)
+}
 app.use(middleware.unkownEndpoint)
 app.use(middleware.errorHandler)
 

@@ -10,6 +10,7 @@ blogsRouter.get('/', async (_, response) => {
 
 blogsRouter.get('/:id', async (request, response) => {
   const id = request.params.id
+  if (!id) { response.status(404).end(); return }
   // sure
   const singleBlog = await Blog.findById(id).populate('user')
   return singleBlog ? response.status(200).json(singleBlog).end() : response.status(404).json({ error: 'not found' })
