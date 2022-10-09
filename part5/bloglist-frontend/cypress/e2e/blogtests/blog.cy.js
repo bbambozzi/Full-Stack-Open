@@ -1,5 +1,3 @@
-const { checkPropTypes } = require("prop-types");
-
 describe("Correct user login", () => {
   const userObject = {
     username: "testman",
@@ -74,7 +72,7 @@ describe("when logged in", () => {
 
     cy.get("[data-testid='likeButton']").should("be.visible").eq(1).click();
   });
-  it("Most liked blog gets push upwards", () => {
+  it("Most liked blog gets pushed upwards", () => {
     cy.get("[data-testid='blogDivContainer']").should(
       "contain",
       "Testing: The Final Chapter by Dr. Testman"
