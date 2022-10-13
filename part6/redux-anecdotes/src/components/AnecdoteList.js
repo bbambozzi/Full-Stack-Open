@@ -1,34 +1,46 @@
 import { useSelector, useDispatch } from "react-redux";
-import { newAnecdote, vote } from "../reducers/anecdoteReducer";
-
+import { upvoteAnecdote } from "../reducers/anecdotesReducer";
+import { getFilter } from "../reducers/filterReducer";
+import {
+  showNotification,
+  clearNotification,
+} from "../reducers/notificationReducer";
 export const AnecdoteList = () => {
-  const anecdotes = useSelector((state) => state);
+  const allAnecdotes = useSelector((state) => state.anecdotes);
   const dispatch = useDispatch();
+  const filter = useSelector((state) => state.filter.filter);
+
   const voteAnecdote = (id) => {
-    dispatch(vote(id));
+    dispatch(upvoteAnecdote(id));
+    const foundNoteContent = allAnecdotes.find((n) => n.id === id).content;
+    dispatch(
+      showNotification({
+        content: foundNoteContent,
+        message: "You have voted for",
+      })
+    );
+    setTimeout(() => {
+      dispatch(clearNotification());
+    }, 5000);
   };
 
-  const sortAllAnecdotes = (allNotes) => {
-    const ans = allNotes.sort((a, b) => {
-      return a.votes < b.votes ? 1 : -1;
+  const sortAllAnecdotes = (allAnecdotes) => {
+    const allAnecs = [
+      ...allAnecdotes.filter((a) => a.content.includes(filter)),
+    ];
+    const ans = allAnecs.sort((a, b) => {
+      return a.likes < b.likes ? 1 : -1;
     });
-    return ans;
-  };
-
-  const handleNewAnecdote = (event) => {
-    event.preventDefault();
-    const val = "".concat(event.target.anecdote.value);
-    dispatch(newAnecdote(val));
+    return [...ans];
   };
 
   return (
     <>
-      <h2>Anecdotes</h2>
-      {sortAllAnecdotes(anecdotes).map((anecdote) => (
+      {sortAllAnecdotes(allAnecdotes).map((anecdote) => (
         <div key={anecdote.id}>
           <div>{anecdote.content}</div>
           <div>
-            has {anecdote.votes}
+            has {anecdote.likes}
             <button onClick={() => voteAnecdote(anecdote.id)}>vote</button>
           </div>
         </div>
