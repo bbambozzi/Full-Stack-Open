@@ -1,5 +1,5 @@
 // simpe reducer that just sets a filter value
-import { createSlice, useSelector } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = { filter: "" };
 const filterReducer = createSlice({

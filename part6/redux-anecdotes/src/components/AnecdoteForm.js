@@ -1,25 +1,15 @@
 import { useSelector, useDispatch } from "react-redux";
-import { createAnecdote } from "../reducers/anecdotesReducer";
-import {
-  showNotification,
-  clearNotification,
-} from "../reducers/notificationReducer";
+import { addAnecdote } from "../reducers/anecdotesReducer";
+import { setNotification } from "../reducers/notificationReducer";
 
 const AnecdoteForm = () => {
   const dispatch = useDispatch();
   const handleNewAnecdote = (event) => {
     event.preventDefault();
-    const val = "".concat(event.target.anecdote.value);
-    dispatch(createAnecdote(val));
+    dispatch(addAnecdote(event.target.anecdote.value));
     dispatch(
-      showNotification({
-        message: "You have added the new note",
-        content: event.target.anecdote.value,
-      })
+      setNotification(`You have added '${event.target.anecdote.value}'`, 5000)
     );
-    setTimeout(() => {
-      dispatch(clearNotification());
-    }, 5000);
   };
 
   return (

@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import anecdoteService from "../services/anecdoteService";
 
 const generateId = () => {
   const seed = Math.random() * 99999999;
@@ -9,28 +10,13 @@ const contentToObject = (content) => {
   return { content, likes: 0, id: generateId() };
 };
 
-const allAnecdotes = [
-  "If it hurts, do it more often",
-  "Adding manpower to a late software project makes it later!",
-  "The first 90 percent of the code accounts for the first 90 percent of the development time...The remaining 10 percent of the code accounts for the other 90 percent of the development time.",
-  "Any fool can write code that a computer can understand. Good programmers write code that humans can understand.",
-  "Premature optimization is the root of all evil.",
-  "Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it.",
-];
-
-let initialState = [];
-
-for (let anec of allAnecdotes) {
-  initialState.push(contentToObject(anec));
-}
-
 const anecdotes = createSlice({
   name: "anecdotes",
-  initialState,
+  initialState: [],
   reducers: {
     createAnecdote: (state, action) => {
-      const content = action.payload;
-      state.push(contentToObject(content));
+      const anec = action.payload;
+      state.push(anec);
     },
     upvoteAnecdote: (state, action) => {
       const id = action.payload;
@@ -40,8 +26,54 @@ const anecdotes = createSlice({
         return anec.id !== id ? anec : { ...newAnecdote };
       });
     },
+    setAnecdotes: (state, action) => {
+      const allAnecdotes = action.payload;
+      return allAnecdotes;
+    },
   },
 });
 
-export const { createAnecdote, upvoteAnecdote } = anecdotes.actions;
+export const initializeAnecdotes = () => {
+  return async (dispatch, getState) => {
+    const allAnecdotes = await anecdoteService.getAllAnecdotes();
+    dispatch(setAnecdotes(allAnecdotes));
+  };
+};
+
+export const getAllAnecdotes = () => {
+  return async (dispatch, getState) => {
+    const allAnecdotes = await anecdoteService.getAllAnecdotes;
+    dispatch(setAnecdotes(allAnecdotes));
+  };
+};
+
+export const addAnecdote = (anecdoteContent) => {
+  return async (dispatch, getState) => {
+    let anecdote = {
+      content: anecdoteContent,
+      votes: 0,
+      id: generateId().toString(),
+    };
+    await anecdoteService.addNewAnecdote(anecdote);
+    dispatch(createAnecdote(anecdote));
+  };
+};
+
+export const likeAnecdote = (anecdoteID) => {
+  return async (dispatch, getState) => {
+    let newAnecdote = getState().anecdotes.find(
+      (anec) => anec.id === anecdoteID
+    );
+    newAnecdote = { ...newAnecdote, votes: newAnecdote.votes + 1 };
+    await anecdoteService.changeAnecdote(newAnecdote);
+    const allAnecs = getState().anecdotes.map((a) =>
+      a.id === anecdoteID ? newAnecdote : a
+    );
+    dispatch(upvoteAnecdote(anecdoteID));
+    dispatch(setAnecdotes(allAnecs));
+  };
+};
+
+export const { createAnecdote, upvoteAnecdote, setAnecdotes } =
+  anecdotes.actions;
 export default anecdotes.reducer;
