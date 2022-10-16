@@ -15,9 +15,15 @@ const notification = createSlice({
 
 export const setNotification = (message, timeout) => {
   return async (dispatch, getState) => {
+    if (getState().notification) {
+      dispatch(clearNotification());
+    }
     dispatch(showNotification(message));
     setTimeout(() => {
-      dispatch(clearNotification());
+      if (getState().notification === message) {
+        dispatch(clearNotification());
+        console.log(`found ${message}! removing`);
+      }
     }, timeout);
   };
 };
