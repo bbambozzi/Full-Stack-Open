@@ -22,7 +22,6 @@ export const setNotification = (message, timeout) => {
     setTimeout(() => {
       if (getState().notification === message) {
         dispatch(clearNotification());
-        console.log(`found ${message}! removing`);
       }
     }, timeout);
   };
