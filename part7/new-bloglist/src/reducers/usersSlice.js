@@ -28,7 +28,7 @@ const userSlice = createSlice({
         return state;
       }
       const newUser = action.payload;
-      const newState = state.concat({ user: newUser });
+      const newState = state.concat({ user: newUser, id: state.length + 1 });
       console.log(`new state is ${newState}`);
       return newState;
     },

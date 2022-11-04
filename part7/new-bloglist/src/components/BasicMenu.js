@@ -48,7 +48,7 @@ export default function BasicMenu() {
               onRedirect("/login");
             }}
           >
-            <Typography variant="body1">Login</Typography>
+            Login
           </Button>
         </MenuItem>
         <MenuItem onClick={handleClose}>

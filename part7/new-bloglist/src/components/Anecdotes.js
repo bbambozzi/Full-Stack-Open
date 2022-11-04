@@ -1,10 +1,10 @@
 import { Typography, Grid } from "@mui/material";
 import AnecdoteCard from "./AnecdoteCard";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const Anecdotes = () => {
   const anecs = useSelector((state) => state.anecdotes);
-  console.log(`anecs : ${JSON.stringify(anecs)}`);
   return (
     <div>
       <>

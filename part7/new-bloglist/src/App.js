@@ -7,6 +7,8 @@ import SingleAnecdote from "./components/SingleAnecdote";
 import Users from "./components/Users";
 import SingleUser from "./components/SingleUser";
 import Login from "./components/Login";
+import Create from "./components/Create";
+import AnecdoteForm from "./components/AnecdoteForm";
 
 function App() {
   return (
@@ -22,6 +24,8 @@ function App() {
           <Route path="/users" element={<Users />}></Route>
           <Route path="/users/:id" element={<SingleUser />}></Route>
           <Route path="/login" element={<Login />}></Route>
+          <Route path="/create" element={<AnecdoteForm />}></Route>
+          <Route path="/" element={<Login />}></Route>
         </Routes>
       </div>
     </>
