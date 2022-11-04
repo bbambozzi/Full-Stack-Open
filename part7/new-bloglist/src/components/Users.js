@@ -10,6 +10,7 @@ import {
   TableHead,
   TableRow,
   Paper,
+  Link,
 } from "@mui/material";
 
 const countUserAnecdotes = (user, anecdotes) => {
@@ -20,9 +21,14 @@ const countUserAnecdotes = (user, anecdotes) => {
 };
 
 const Users = () => {
+  const navigate = useNavigate();
   const users = useSelector((state) => state.users);
   const anecdotes = useSelector((state) => state.anecdotes);
 
+  const navigateToUserId = (id) => {
+    id = Number(id);
+    navigate(`/users/${id}`);
+  };
   return (
     <>
       <Typography variant="h5">Users</Typography>
@@ -38,7 +44,15 @@ const Users = () => {
             {users.map((u) => (
               <TableRow key={u.user}>
                 <TableCell component="th" scope="row">
-                  {u.user}
+                  <Link
+                    component="button"
+                    underline="hover"
+                    onClick={() => {
+                      navigateToUserId(u.id);
+                    }}
+                  >
+                    <Typography variant="body2">{u.user}</Typography>
+                  </Link>
                 </TableCell>
                 <TableCell>{countUserAnecdotes(u.user, anecdotes)}</TableCell>
               </TableRow>

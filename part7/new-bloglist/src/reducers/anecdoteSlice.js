@@ -23,6 +23,13 @@ let initialState = [
     likes: 5,
     id: 2,
   },
+  {
+    author: "Edgar Dijkstra",
+    title: "A Note on Two Problems in Connexion with Graphs",
+    likes: 3,
+    url: "http://www-m3.ma.tum.de/foswiki/pub/MN0506/WebHome/dijkstra.pdf",
+    id: 4,
+  },
 ];
 
 const anecdoteSlice = createSlice({
@@ -41,8 +48,25 @@ const anecdoteSlice = createSlice({
     removeAllAnecdotes: () => {
       return [];
     },
+    likeAnecdote: (state, action) => {
+      console.log(`got payload ${action.payload}`);
+      const id = action.payload;
+      const anec = state.find((a) => a.id === id);
+      if (!anec) {
+        return state;
+      }
+      const newAnecdote = { ...anec, likes: anec.likes + 1 };
+      const newState = state.filter((anec) => anec.id !== id);
+      newState.push(newAnecdote);
+      return newState;
+    },
   },
 });
-export const { addAnecdote, removeAllAnecdotes, removeAnecdote, getAnecdotes } =
-  anecdoteSlice.actions;
+export const {
+  addAnecdote,
+  removeAllAnecdotes,
+  removeAnecdote,
+  getAnecdotes,
+  likeAnecdote,
+} = anecdoteSlice.actions;
 export default anecdoteSlice.reducer;

@@ -4,12 +4,15 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = [
   {
     user: "Edgar Dijkstra",
+    id: 0,
   },
   {
     user: "Satoshi Nakamoto",
+    id: 1,
   },
   {
     user: "Roy Thomas Fielding",
+    id: 2,
   },
 ];
 

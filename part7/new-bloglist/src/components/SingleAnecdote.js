@@ -1,12 +1,26 @@
-import { Typography, Paper, Link } from "@mui/material";
-import { useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { Typography, Button, Link } from "@mui/material";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router-dom";
+import { likeAnecdote } from "../reducers/anecdoteSlice";
 const SingleAnecdote = () => {
+  const [anec, setAnec] = useState(null);
+  const dispatch = useDispatch();
   const anecdoteId = Number(useParams().id);
   const anecs = useSelector((state) => state.anecdotes);
-  const anec = anecs.find((a) => a.id === anecdoteId);
+  useEffect(() => {
+    setAnec(anecs.find((a) => a.id === anecdoteId));
+  }, [anecs]);
+  const handleAnecdoteLike = (id) => {
+    dispatch(likeAnecdote(Number(id)));
+  };
 
-  // TODO, the author should link to the specific username website;
+  const navigate = useNavigate();
+  const navigateToUserId = (id) => {
+    id = Number(id);
+    navigate(`/users/${id}`);
+  };
+
   return (
     <>
       {anec ? (
@@ -21,7 +35,27 @@ const SingleAnecdote = () => {
             </Typography>
           </>
           <>
-            <Typography variant="body2">by {anec.author}</Typography>
+            <Typography>
+              {`Likes: ${anec.likes}`}
+              <Button
+                variant="outlined"
+                onClick={() => {
+                  handleAnecdoteLike(anec.id);
+                }}
+              >
+                👍
+              </Button>
+            </Typography>
+          </>
+          <>
+            <Link
+              component="button"
+              onClick={() => {
+                navigateToUserId(anec.id);
+              }}
+            >
+              <Typography variant="body2">by {anec.author}</Typography>
+            </Link>
           </>
         </>
       ) : (
