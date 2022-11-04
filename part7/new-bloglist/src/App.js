@@ -6,6 +6,7 @@ import BasicMenu from "./components/BasicMenu";
 import SingleAnecdote from "./components/SingleAnecdote";
 import Users from "./components/Users";
 import SingleUser from "./components/SingleUser";
+import Login from "./components/Login";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
           <Route path="/anecdotes/:id" element={<SingleAnecdote />}></Route>
           <Route path="/users" element={<Users />}></Route>
           <Route path="/users/:id" element={<SingleUser />}></Route>
+          <Route path="/login" element={<Login />}></Route>
         </Routes>
       </div>
     </>

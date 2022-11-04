@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-// TODO encrypt passwords with bcrypt
+// This should be done in the backend, this is a quick sketch to get operational and produce a Proof of concept.
 const initialState = [
   {
     user: "Edgar Dijkstra",
@@ -24,9 +24,13 @@ const userSlice = createSlice({
       return state;
     },
     createUser: (state, action) => {
+      if (state.find((u) => u.user === action.payload)) {
+        return state;
+      }
       const newUser = action.payload;
-      state.append({ user: newUser });
-      return state;
+      const newState = state.concat({ user: newUser });
+      console.log(`new state is ${newState}`);
+      return newState;
     },
     deleteUser: (state, action) => {
       const target = action.payload;
