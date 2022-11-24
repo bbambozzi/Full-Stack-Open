@@ -113,6 +113,8 @@ const typeDefs = gql`
     authorCount: Int!
     allBooks(author: String, genre: String): [Book!]
     allAuthors(name: String): [Author]
+    findBook(book: String!): Book
+    findAuthor(author: String!): Author 
   }
 
   type Mutation {
@@ -120,7 +122,7 @@ const typeDefs = gql`
       title: String!
       published: Int!
       author: String!
-      genres: [String!]
+      genres: [String!]!
     ): Book
     editAuthor(name: String!, setBornTo: Int!): Author!
   }
@@ -128,16 +130,26 @@ const typeDefs = gql`
 
 const resolvers = {
   Query: {
-    authorCount: (root, args) => {
+    authorCount: () => {
       return authors.length;
     },
-    allAuthors: (root, args) => {
+    findBook: (_, args) => {
+      if (!args.book) {return null}
+      return books.find((b) => b.title === args.book)
+
+    },
+    findAuthor: (_, args) => {
+      if (!args.author) {return null}
+      return authors.find((a) => a.name === args.author)
+
+    },
+    allAuthors: (_, args) => {
       if (!args.author) {
         return authors;
       }
       return authors.find((a) => a.name === args.name);
     },
-    allBooks: (root, args) => {
+    allBooks: (_, args) => {
       if (args.author) {
         const filtered = books.filter((b) => b.author === args.author);
         if (!args.genre) {
@@ -149,24 +161,26 @@ const resolvers = {
     },
   },
   Mutation: {
-    addBook: (root, args) => {
+    addBook: (_, args) => {
+      if (!args.title || !args.author || !args.published || !args.genres){
+        return null
+      }
       const newBook = { ...args, id: uuidv4() };
-      books.concat(newBook);
+      books = books.concat(newBook);
       return newBook;
     },
-    editAuthor: (root, args) => {
+    editAuthor: (_, args) => {
       const oldAuthor = authors.find((a) => a.name === args.name);
       if (oldAuthor == undefined) {
         throw new UserInputError("Username not found!");
       }
-      console.log(oldAuthor);
       const newAuthor = { ...oldAuthor, born: args.setBornTo };
       authors = authors.map((a) => (a.name !== args.name ? a : newAuthor));
       return authors.find((a) => a.name === args.name);
     },
   },
   Author: {
-    bookCount: (root, args) => {
+    bookCount: (root, ) => {
       return (count = books.reduce((acc, cur) => {
         return cur.author === root.name ? acc + 1 : acc;
       }, 0));
