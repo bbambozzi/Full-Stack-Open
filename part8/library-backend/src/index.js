@@ -50,6 +50,8 @@ const typeDefs = gql`
     findBook(book: String!): Book
     findAuthor(author: String!): Author 
     me: User
+    findBooksByGenre(genre: String): [Book]!
+    findAllGenres: [String!]!
   }
 
   type Mutation {
@@ -89,9 +91,27 @@ const resolvers = {
       return await Book.find({})
     },
     me: async (_, __, context) => {
-      return context.currentUser
-
+      return await context.currentUser
     },
+    findBooksByGenre: async (_, args) => {
+      if (args.genre === null || args.genre === "") {
+        return await Book.find({})
+      }
+      const books = await Book.find({ genres: { $in: args.genre } })
+      return books
+    },
+    findAllGenres: async () => {
+      const genres = new Set()
+      const allEntries = await Book.find({})
+      for (let entry of allEntries) {
+        for (let genre of entry.genres) {
+          if (!genres.has(genre)) {
+            genres.add(genre)
+          }
+        }
+      }
+      return [...genres]
+    }
   },
   Mutation: {
     addBook: async (_, args) => {
@@ -141,6 +161,7 @@ const resolvers = {
         return newUser
       }
     },
+
   },
   Author: {
     bookCount: async (root, _) => {
