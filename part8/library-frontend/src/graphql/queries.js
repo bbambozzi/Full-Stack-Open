@@ -14,7 +14,10 @@ const ALL_BOOKS = gql`
     allBooks {
       title
       published
-      author
+      author {
+        name
+        born
+      }
       genres
     }
   }
@@ -40,4 +43,41 @@ const FIND_BOOK = gql`
   }
 `;
 
-export { FIND_AUTHOR, FIND_BOOK, ALL_AUTHORS, ALL_BOOKS };
+const ALL_BOOKS_FILTERED = gql`
+  query findBooksByGenre($genre: String!) {
+    findBooksByGenre(genre: $genre) {
+      title
+      published
+      author {
+        name
+        born
+      }
+      genres
+    }
+  }
+`;
+
+const FIND_ALL_GENRES = gql`
+  query findAllGenres {
+    findAllGenres
+  }
+`;
+
+const ME = gql`
+  query {
+    me {
+      favoriteGenre
+      username
+    }
+  }
+`;
+
+export {
+  FIND_AUTHOR,
+  FIND_BOOK,
+  ALL_AUTHORS,
+  ALL_BOOKS,
+  FIND_ALL_GENRES,
+  ALL_BOOKS_FILTERED,
+  ME,
+};
