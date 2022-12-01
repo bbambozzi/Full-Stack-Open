@@ -66,6 +66,9 @@ const typeDefs = gql`
     login(username: String!, password: String!): Token
     createUser(username: String!, password: String! favoriteGenre: String!): User
   }
+  type Subscription {
+    bookAdded: Book!
+}
 `;
 
 const resolvers = {
@@ -91,7 +94,7 @@ const resolvers = {
       return await Book.find({})
     },
     me: async (_, __, context) => {
-      return await context.currentUser
+      return context.currentUser
     },
     findBooksByGenre: async (_, args) => {
       if (args.genre === null || args.genre === "") {
@@ -175,7 +178,13 @@ const resolvers = {
     author: async (root, _) => {
       return await Author.findById(root.author)
     }
+  },
+  Subscription: {
+    bookAdded: {
+      subscribe: () => pubsub.asyncIterator(["BOOK_ADDED"])
+    }
   }
+
 };
 
 const server = new ApolloServer({
