@@ -3,11 +3,11 @@ interface WeightCategory {
   health: string;
 }
 
-const userIntHeight: number = Number(process.argv[2]);
-const userWeight: number = Number(process.argv[3]);
+const userIntHeight = Number(process.argv[2]);
+const userWeight = Number(process.argv[3]);
 
-const calculateBmi = (intHeight: number, weight: number): string => {
-  let stringed_intHeight: string = intHeight.toString();
+export const calculateBmi = (intHeight: number, weight: number): string => {
+  const stringed_intHeight: string = intHeight.toString();
   const initialNumber: string =
     stringed_intHeight.length > 2 ? stringed_intHeight[0] : "0";
   const restOfNumber: string =
@@ -24,5 +24,7 @@ const calculateBmi = (intHeight: number, weight: number): string => {
   return `${currentPerson.category} ${currentPerson.health}`;
 };
 
-console.log(`User Height : ${userIntHeight} , User Weight : ${userWeight}`);
-console.log(calculateBmi(userIntHeight, userWeight));
+if (userIntHeight && userWeight) {
+  console.log(`User Height : ${userIntHeight} , User Weight : ${userWeight}`);
+  console.log(calculateBmi(userIntHeight, userWeight));
+}
