@@ -1,4 +1,4 @@
-interface ExercisesResult {
+export interface ExercisesResult {
   periodLength: number;
   trainingDays: number;
   success: boolean;
@@ -8,19 +8,22 @@ interface ExercisesResult {
   average: number;
 }
 
-const userTarget: number = Number(process.argv[2]);
+/*
+const userTarget = Number(process.argv[2]);
 const userArrayData: number[] = process.argv
   .splice(3)
   .map((elem) => Number(elem));
 
 console.log(`User target ${userTarget}, User Array Data : ${userArrayData}`);
+*/
 
-const calculateExercises = (
+export const calculateExercises = (
   data: number[],
   target: number
 ): ExercisesResult => {
   const periodLength: number = data.length;
-  const average: number = data.reduce((acc, cur) => acc + cur, 0) / data.length;
+  const average: number =
+    data.reduce((acc, cur) => acc + Number(cur), 0) / data.length;
   const trainingDays: number = data.reduce(
     (acc, cur) => (cur !== 0 ? acc + 1 : acc),
     0
@@ -48,5 +51,3 @@ const calculateExercises = (
     average,
   };
 };
-
-console.log(calculateExercises(userArrayData, userTarget));
