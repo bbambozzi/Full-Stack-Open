@@ -1,9 +1,9 @@
 import allPatients from "../data/patients.json";
-import uuid from "uuid";
+/*
 import { newPatient } from "../types/newPatient";
+*/
 import { patient } from "../types/patient";
 import { Gender } from "../types/Gender";
-import { isStringLiteral } from "typescript";
 
 let patients: Array<patient> = allPatients as patient[];
 
@@ -32,6 +32,13 @@ const addPatient = ({
   ssn,
   gender,
   occupation,
+}: {
+  id: string;
+  name: string;
+  dateOfBirth: string;
+  ssn: string;
+  gender: string;
+  occupation: string;
 }): patient => {
   const newPatient: patient = {
     id: parseString(id),
@@ -40,6 +47,7 @@ const addPatient = ({
     ssn: parseString(ssn),
     gender: parseGender(gender),
     occupation: parseString(occupation),
+    entries: [],
   };
   patients.push(newPatient);
   return newPatient;
@@ -49,9 +57,9 @@ const patientAmount = (): number => {
   return patients.length;
 };
 
-const findById = (id: string): patient | undefined => {
+const getPatientById = (id: string): patient | undefined => {
   const result: undefined | patient = patients.find((p) => p.id === id);
   return result;
 };
 
-export default { getPatients, addPatient, patientAmount };
+export default { getPatients, addPatient, patientAmount, getPatientById };
