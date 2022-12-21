@@ -12,7 +12,7 @@ app.get("/api/ping", (_req, res) => {
   res.send("pong");
 });
 
-app.get("/api/patients", patientRouter);
+app.use("/api/patients", patientRouter);
 
 app.listen(PORT, () => {
   console.log("Connected to PORT", PORT);
