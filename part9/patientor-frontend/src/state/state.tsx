@@ -8,12 +8,12 @@ export type State = {
 };
 
 const initialState: State = {
-  patients: {}
+  patients: {},
 };
 
 export const StateContext = createContext<[State, React.Dispatch<Action>]>([
   initialState,
-  () => initialState
+  () => initialState,
 ]);
 
 type StateProviderProps = {
@@ -21,10 +21,7 @@ type StateProviderProps = {
   children: React.ReactElement;
 };
 
-export const StateProvider = ({
-  reducer,
-  children
-}: StateProviderProps) => {
+export const StateProvider = ({ reducer, children }: StateProviderProps) => {
   const [state, dispatch] = useReducer(reducer, initialState);
   return (
     <StateContext.Provider value={[state, dispatch]}>
@@ -32,4 +29,30 @@ export const StateProvider = ({
     </StateContext.Provider>
   );
 };
+
 export const useStateValue = () => useContext(StateContext);
+
+export const setPatientList = (patients: Patient[]): void => {
+  // eslint-disable-next-line
+  const [state, dispatch] = useStateValue();
+  dispatch({ type: "SET_PATIENT_LIST", payload: patients });
+};
+
+export const updatePatient = (patient: Patient): Patient | void => {
+  const [state, dispatch] = useStateValue();
+  dispatch({ type: "UPDATE_PATIENT", payload: patient });
+  return state.patients[patient.id] ? state.patients[patient.id] : undefined;
+};
+
+export const getPatientList = () => {
+  const [state] = useStateValue();
+  return state.patients;
+};
+
+export const getSinglePatient = (id: string | void): Patient | void => {
+  if (!id) {
+    return undefined;
+  }
+  const [state] = useStateValue();
+  return state.patients[id] ? state.patients[id] : undefined;
+};

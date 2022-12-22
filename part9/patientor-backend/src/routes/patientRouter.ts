@@ -16,9 +16,7 @@ router.get("/:id", (req, res) => {
   const id: string | undefined = req.params.id;
   const ans: patient | undefined = patientService.getPatientById(id);
   if (ans) {
-    const { ssn, entries, ...foundPatient }: patient = ans;
-    const answer: Omit<patient, "ssn" | "entries"> = foundPatient;
-    res.json(answer).end();
+    res.json(ans).end();
     return;
   }
   res.json({ error: "not found" }).end();
