@@ -1,6 +1,5 @@
 import diagnoses from "../data/diagnoses.json";
 import { diagnostic } from "../types/diagnostic";
-import router from "../index";
 
 const getDiagnoses = (): diagnostic[] => {
   return diagnoses;
@@ -15,4 +14,8 @@ const diagnosesAmount = (): number => {
   return diagnoses.length;
 };
 
-export { getDiagnoses, addDiagnoses, diagnosesAmount };
+const findDiagnosis = (code: string): diagnostic | string => {
+  return diagnoses.find((d) => d.code == code) || "not found";
+};
+
+export default { getDiagnoses, addDiagnoses, diagnosesAmount, findDiagnosis };

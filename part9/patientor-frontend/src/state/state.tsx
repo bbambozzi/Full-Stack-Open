@@ -1,14 +1,16 @@
 import React, { createContext, useContext, useReducer } from "react";
-import { Patient } from "../types";
+import { Diagnosis, Patient } from "../types";
 
 import { Action } from "./reducer";
 
 export type State = {
   patients: { [id: string]: Patient };
+  diagnoses: { [code: Diagnosis["code"]]: Diagnosis };
 };
 
 const initialState: State = {
   patients: {},
+  diagnoses: {},
 };
 
 export const StateContext = createContext<[State, React.Dispatch<Action>]>([
@@ -44,9 +46,14 @@ export const updatePatient = (patient: Patient): Patient | void => {
   return state.patients[patient.id] ? state.patients[patient.id] : undefined;
 };
 
-export const getPatientList = () => {
+export const getPatientList = (): { [id: string]: Patient } => {
   const [state] = useStateValue();
   return state.patients;
+};
+
+export const getDiagnoses = (): { [code: string]: Diagnosis } => {
+  const [state] = useStateValue();
+  return state.diagnoses;
 };
 
 export const getSinglePatient = (id: string | void): Patient | void => {
@@ -55,4 +62,19 @@ export const getSinglePatient = (id: string | void): Patient | void => {
   }
   const [state] = useStateValue();
   return state.patients[id] ? state.patients[id] : undefined;
+};
+
+export const getDiagnosisByCode = (code: string): Diagnosis => {
+  const [state] = useContext(StateContext);
+  return state.diagnoses[code];
+};
+
+export const useSetDiagnoses = ({
+  diagnoses,
+}: {
+  diagnoses: Diagnosis[];
+}): { [code: string]: Diagnosis } | void => {
+  const [state, dispatch] = useContext(StateContext);
+  dispatch({ type: "SET_DIAGNOSES", payload: diagnoses });
+  return state.diagnoses;
 };

@@ -1,4 +1,4 @@
-import allPatients from "../data/patients.json";
+import allPatients from "../data/patients";
 /*
 import { newPatient } from "../types/newPatient";
 */

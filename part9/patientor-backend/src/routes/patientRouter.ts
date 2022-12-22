@@ -8,7 +8,7 @@ router.get("/", (_req, res) => {
   res.json(
     patientService
       .getPatients()
-      .map(({ ssn, entries, ...rest }: patient): publicPatient => rest)
+      .map(({ ssn, ...rest }: patient): publicPatient => rest)
   );
 });
 
