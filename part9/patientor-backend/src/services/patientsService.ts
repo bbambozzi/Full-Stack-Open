@@ -1,4 +1,5 @@
 import allPatients from "../data/patients";
+import { BaseEntryInput, BaseEntry } from "../types/Entries";
 /*
 import { newPatient } from "../types/newPatient";
 */
@@ -11,12 +12,14 @@ const parseGender = (gender: string): Gender => {
   if (!gender || typeof gender !== "string" || !(gender in Gender)) {
     throw new Error("Error: Gender invalid");
   }
-  return gender as Gender;
+  return gender.toUpperCase() as Gender;
 };
 
 const parseString = (str: unknown): string => {
   if (typeof str !== "string" || !str) {
-    throw new Error("Not a string!");
+    throw new Error(
+      "Incomplete! Expected id, name, dateOfBirth, ssn, gender, occupation."
+    );
   }
   return str as string;
 };
@@ -26,14 +29,12 @@ const getPatients = (): patient[] => {
 };
 
 const addPatient = ({
-  id,
   name,
   dateOfBirth,
   ssn,
   gender,
   occupation,
 }: {
-  id: string;
   name: string;
   dateOfBirth: string;
   ssn: string;
@@ -41,7 +42,7 @@ const addPatient = ({
   occupation: string;
 }): patient => {
   const newPatient: patient = {
-    id: parseString(id),
+    id: Date.now().toString(),
     name: parseString(name),
     dateOfBirth: parseString(dateOfBirth),
     ssn: parseString(ssn),
@@ -53,6 +54,30 @@ const addPatient = ({
   return newPatient;
 };
 
+const addEntry = (
+  patientId: string,
+  entryToAdd: BaseEntryInput
+): patient | Error => {
+  const foundPatient = patients.find((p) => p.id === patientId);
+  if (!foundPatient) {
+    console.log('Patient not found.')
+    throw Error("Patient not found");
+  }
+  try {
+    const finalEntryToAdd: BaseEntry = {
+      ...entryToAdd,
+      id: Date.now().toString(),
+      date: Date.now().toString(),
+    };
+    foundPatient.entries.push(finalEntryToAdd);
+    patients = allPatients.map((p) => (p.id === patientId ? foundPatient : p));
+    console.log('Added new entry!')
+    return foundPatient;
+  } catch (e) {
+    throw Error("Error : Could not add new entry");
+  }
+};
+
 const patientAmount = (): number => {
   return patients.length;
 };
@@ -62,4 +87,10 @@ const getPatientById = (id: string): patient | undefined => {
   return result;
 };
 
-export default { getPatients, addPatient, patientAmount, getPatientById };
+export default {
+  getPatients,
+  addPatient,
+  patientAmount,
+  getPatientById,
+  addEntry,
+};

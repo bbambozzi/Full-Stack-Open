@@ -29,10 +29,16 @@ const PatientListPage = () => {
   const submitNewPatient = async (values: PatientFormValues) => {
     try {
       const { data: newPatient } = await axios.post<Patient>(
-        `${apiBaseUrl}/patients`,
+        `${apiBaseUrl}/patients/1`,
         values
       );
-      dispatch({ type: "ADD_PATIENT", payload: newPatient });
+      dispatch({
+        type: "ADD_PATIENT",
+        payload: {
+          ...newPatient,
+          id: Date.now().toString(),
+        },
+      });
       closeModal();
     } catch (e: unknown) {
       if (axios.isAxiosError(e)) {
