@@ -17,3 +17,5 @@ export interface BaseEntry {
   type: "Hospital" | "OccupationalHealthcare" | "HealthCheck";
   diagnosisCodes?: string[];
 }
+
+export type BaseEntryInput = Omit<BaseEntry, "id" | "date">;

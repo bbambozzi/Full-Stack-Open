@@ -9,6 +9,7 @@ import { Gender, Patient } from "../types";
  * use type Patient, but omit id and entries,
  * because those are irrelevant for new patient object.
  */
+
 export type PatientFormValues = Omit<Patient, "id" | "entries">;
 
 interface Props {
@@ -30,7 +31,7 @@ export const AddPatientForm = ({ onSubmit, onCancel }: Props) => {
         ssn: "",
         dateOfBirth: "",
         occupation: "",
-        gender: Gender.Other,
+        gender: Gender.Male,
       }}
       onSubmit={onSubmit}
       validate={(values) => {

@@ -5,9 +5,15 @@ export interface Diagnosis {
 }
 
 export enum Gender {
-  Male = "male",
-  Female = "female",
-  Other = "other",
+  Male = "Male",
+  Female = "Female",
+  Other = "Other",
+}
+
+export enum PatientEntryTypes {
+  Hospital = "Hospital",
+  OccupationalHealthcare = "OccupationalHealthcare",
+  HealthCheck = "HealthCheck",
 }
 
 export interface Patient {
@@ -24,6 +30,6 @@ export interface BaseEntry {
   id: string;
   date: string;
   specialist: string;
-  type: "Hospital" | "OccupationalHealthcare" | "HealthCheck";
+  type: PatientEntryTypes;
   diagnosisCodes?: string[];
 }
