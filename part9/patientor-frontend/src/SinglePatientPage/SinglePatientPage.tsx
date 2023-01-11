@@ -19,14 +19,18 @@ const SinglePatientPage = (): JSX.Element => {
   const closeModal = () => {
     setModalOpen(false);
   };
+
   const addNewEntry = async (values: EntryFormValues) => {
     console.log(`About to add entry to patient ${patientId}`);
     const newObject = { ...values, id: patientId, date: Date.now().toString() };
-    const data = await axios.post(
-      `${apiBaseUrl}/api/patients/${patientId}/entries`,
-      newObject
-    );
-    console.log(data);
+    try {
+      await axios.post(
+        `${apiBaseUrl}/patients/${patientId}/entries`,
+        newObject
+      );
+    } catch (e: unknown) {
+      console.error(e);
+    }
   };
 
   const curPatient: Patient | void = getSinglePatient(patientId);
@@ -68,7 +72,7 @@ const SinglePatientPage = (): JSX.Element => {
           onClose={closeModal}
         />
         <Button variant="contained" onClick={() => openModal()}>
-          Add New Patient
+          Add New Entry
         </Button>
       </>
     </>

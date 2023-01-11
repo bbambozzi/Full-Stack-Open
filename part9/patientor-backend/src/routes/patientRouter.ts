@@ -36,6 +36,7 @@ router.post("/:id", (req, res) => {
 });
 
 router.post("/:id/entries", (req, res) => {
+  console.log('got request at :id/entries')
   const patientId = req.params.id;
   const newEntry: BaseEntryInput = req.body;
   if (!newEntry) {
