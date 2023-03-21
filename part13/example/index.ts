@@ -7,8 +7,7 @@ const sequelize = new Sequelize(process.env.DATABASE_URL || "");
 const app = express();
 app.use(express.json());
 // includes both username and pwd in the url
-
-class Note extends Model {}
+class Note extends Model { }
 Note.init(
   {
     id: {
