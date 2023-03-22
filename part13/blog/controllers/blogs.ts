@@ -1,6 +1,7 @@
 import express from "express";
 import { Response, NextFunction, Request } from "express";
-import jwt, { JwtPayload } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
+import { blogQueryParser } from "./helpers/queryParsers";
 import { SECRET } from "../utils/config";
 import { Blog, User } from "../models/models";
 const app = express.Router();
@@ -33,7 +34,9 @@ const extractorMiddleware = (
 };
 
 app.get("/", async (req, res) => {
+  const where = blogQueryParser(req.query) as any;
   const blogs = await Blog.findAll({
+    order: [["likes", "DESC"]],
     attributes: {
       exclude: ["userId"],
     },
@@ -41,6 +44,7 @@ app.get("/", async (req, res) => {
       model: User,
       attributes: ["name"],
     },
+    where,
   });
   res.json(blogs);
 });
@@ -59,7 +63,10 @@ app.post(
         res.status(404).json({ e: "user not found in db" });
         return;
       }
-      const newBlog = Blog.create({ ...req.body, userId: foundUser.id });
+      const newBlog = await Blog.create({
+        ...req.body,
+        userId: foundUser.id,
+      });
       res.status(201).json(newBlog);
     } catch (e) {
       console.error(`Error ${e}`);
