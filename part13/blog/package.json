@@ -60,6 +60,7 @@
     "@types/node": "^18.15.3",
     "@types/sequelize": "^4.28.14",
     "nodemon": "^2.0.21",
+    "sequelize-cli": "^6.6.0",
     "typescript": "^5.0.2"
   },
   "description": ""
