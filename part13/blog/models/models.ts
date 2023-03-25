@@ -1,6 +1,7 @@
 import Blog from "./Blog";
 import User from "./User";
 import ReadingListEntry from "./ReadingListEntry";
+import ActiveSession from "./activeSession";
 
 User.hasMany(Blog, {
   foreignKey: {
@@ -40,8 +41,12 @@ ReadingListEntry.belongsTo(Blog, {
 User.belongsToMany(Blog, { through: ReadingListEntry });
 Blog.belongsToMany(User, { through: ReadingListEntry });
 
+User.hasOne(ActiveSession);
+ActiveSession.hasOne(User);
+
 Blog.sync();
 User.sync();
 ReadingListEntry.sync();
+ActiveSession.sync();
 
 export { Blog, User, ReadingListEntry };

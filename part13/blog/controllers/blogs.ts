@@ -30,7 +30,7 @@ app.post(
   "/",
   extractorMiddleware,
   async (req: RequestWithToken, res: Response) => {
-    if (!req?.decodedToken?.id) {
+    if (!req.decodedToken.id) {
       res.status(400).json({ e: "missing token" });
       return;
     }
@@ -46,7 +46,6 @@ app.post(
       });
       res.status(201).json(newBlog);
     } catch (e) {
-      console.error(`Error ${e}`);
       res.status(400).json({ e });
     }
   }

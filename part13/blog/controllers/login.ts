@@ -4,6 +4,7 @@ import { Request, Response, NextFunction } from "express";
 const router = express.Router();
 import { SECRET } from "../utils/config";
 import User from "../models/User";
+import ActiveSession from "../models/activeSession";
 
 router.post("/", async (request, response) => {
   const body = request.body;
@@ -26,8 +27,8 @@ router.post("/", async (request, response) => {
     id: newuser.id,
   };
 
-  const token = jwt.sign(userForToken, SECRET);
-
+  const token = jwt.sign(userForToken, SECRET, { expiresIn: "24h" });
+  await ActiveSession.create({ userId: newuser.id });
   response
     .status(200)
     .send({ token, username: newuser.username, name: newuser.name });
