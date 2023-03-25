@@ -1,10 +1,20 @@
 import express from "express";
-import { Blog, User } from "../models/models";
+import { Op } from "sequelize";
+import { Blog, ReadingListEntry, User } from "../models/models";
 const router = express.Router();
 
 router.get("/", async (req, res) => {
   const users = await User.findAll({
-    include: { model: Blog, attributes: ["title", "url"] },
+    include: [
+      {
+        model: Blog,
+        through: { attributes: [] }, // here we place the attributes of the common readingTableEntries
+        attributes: { exclude: ["createdAt", "updatedAt", "userId"] }, // exclude readingListEntry from Blog
+      },
+      {
+        model: ReadingListEntry,
+      },
+    ],
   });
   res.json(users);
 });
@@ -19,14 +29,29 @@ router.post("/", async (req, res) => {
 });
 
 router.get("/:id", async (req, res) => {
-  const user = await User.findByPk(req.params.id, {
-    include: { model: Blog, attributes: ["title", "url"] },
-  });
-  if (user) {
-    res.json(user);
-  } else {
-    res.status(404).end();
+  let where: {} = {};
+  if (req.query.read === "true" || req.query.read === "false") {
+    where = { read: { [Op.eq]: Boolean(req.query.read) } };
   }
+
+  const user = await User.findOne({
+    where: {
+      id: req.params.id,
+    },
+    include: [
+      {
+        model: Blog,
+        through: { attributes: [] },
+        attributes: { exclude: ["createdAt", "updatedAt", "userId"] },
+      },
+      {
+        model: ReadingListEntry,
+        where,
+      },
+    ],
+  });
+
+  res.json(user);
 });
 
 router.put("/:username", async (req, res) => {

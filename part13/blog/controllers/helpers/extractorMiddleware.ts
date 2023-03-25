@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { SECRET } from "../../utils/config";
+import { User } from "../../models/models";
 
 interface RequestWithToken extends Request {
   decodedToken?: any;
@@ -15,7 +16,7 @@ const extractorMiddleware = (
   if (auth && auth.startsWith("Bearer ")) {
     try {
       const decodedToken = jwt.verify(auth.substring(7), SECRET);
-      if (typeof decodedToken == "string") {
+      if (typeof decodedToken == "string" || !userIsValid(decodedToken.id)) {
         throw Error("Invalid token");
       }
       req.decodedToken = decodedToken;
@@ -27,6 +28,10 @@ const extractorMiddleware = (
     res.status(401).json({ e: "token is missing" });
     return;
   }
+};
+
+const userIsValid = async (userId: string): Promise<Boolean> => {
+  return (await User.findByPk(userId))?.toJSON()?.isDisabled ? true : false;
 };
 
 export { extractorMiddleware, RequestWithToken };
