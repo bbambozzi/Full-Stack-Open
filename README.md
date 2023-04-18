@@ -13,7 +13,6 @@ Throughout the course, I gained a deep understanding of these technologies and w
 - React router, custom hooks, styling app with CSS and webpack ✅
 - GraphQL ✅
 - TypeScript ✅
-- React Native ✅
 - CI/CD ✅
 - Docker Containers ✅
 - SQL Relational Databases ✅
