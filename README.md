@@ -23,3 +23,6 @@ Throughout the course, I gained a deep understanding of these technologies and w
 
 [Full Stack Open]: https://fullstackopen.com/en/
 [University of Helsinki]: https://www.helsinki.fi/en
+
+
+<sup><sub>Note: Exercises are continously changing in the course. Furthermore, by specific request of the course, some of the exercises are done in separate repositories.<sup><sub>
